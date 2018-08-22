@@ -24,31 +24,32 @@
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
                                 <span class="block m-t-xs"><strong class="font-bold">{$admin['uid']}</strong></span>
-                                <span class="text-muted text-xs block">{$admin['name']}<b class="caret"></b></span></span>
+                                <span class="text-muted text-xs block">{$admin['realname']}<b class="caret"></b></span></span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
                                 <li><a class="J_menuItem" href="/modifypwd">修改密码</a></li>
                                 <li class="divider"></li>
-                                <li><a href="/login?action=out">注销</a></li>
+                                <li><a href="/login?action=logout">注销</a></li>
                             </ul>
                         </div>
                         <div class="logo-element">H+</div>
                     </li>
+                    {foreach $menu as $item}
                     <li>
                         <a href="#">
                             <i class=""></i>
-                            <span class="nav-label">一级菜单</span>
+                            <span class="nav-label">{$item['name']}</span>
                             <span class="fa arrow"></span>
                         </a>
                         <ul class="nav nav-second-level">
+                            {foreach $item['children'] as $son_item}
                             <li>
-                                <a href="#">二级菜单<span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="#">三级菜单</a></li>
-                                </ul>
+                                <a class="J_menuItem" href="{$son_item['url']}">{$son_item['name']}</a>
                             </li>
+                            {/foreach}
                         </ul>
                     </li>
+                    {/foreach}
                 </ul>
             </div>
         </nav>
@@ -155,7 +156,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="title">皮肤选择</div>
+                            <!-- <div class="title">皮肤选择</div>
                             <div class="setings-item default-skin nb">
                                 <span class="skin-name "><a href="#" class="s-skin-0">默认皮肤</a></span>
                             </div>
@@ -164,7 +165,7 @@
                             </div>
                             <div class="setings-item yellow-skin nb">
                                 <span class="skin-name "><a href="#" class="s-skin-3">黄色/紫色主题</a></span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

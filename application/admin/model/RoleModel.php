@@ -1,10 +1,10 @@
 <?php
 namespace app\admin\model;
 
-class AdminModel extends CommonModel
+class RoleModel extends CommonModel
 {
     public function __construct()
     {
-        $this->table = 's1s_admin';
+        $this->table = 's1s_role';
     }
 }
