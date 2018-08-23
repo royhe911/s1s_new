@@ -129,7 +129,7 @@ $(function() {
     }
     s();
 
-    function c1() {
+    function c() {
         var i = $(this).attr('href'),
             o = $(this).data('url'),
             l = $.trim($(this).text()),
@@ -176,7 +176,7 @@ $(function() {
             window.sessionStorage.setItem('tabs', tabs.substring(1))
         }
     }
-    $(".J_menuItem").on("click", c1);
+    $(".J_menuItem").on("click", c);
 
     function h() {
         var m = $(this).parents(".J_menuTab").data("id");
