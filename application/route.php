@@ -10,18 +10,18 @@
 // +----------------------------------------------------------------------
 
 return [
-    '/'              => 'Index/index',
-    '/login'         => 'admin/Index/login', // 后台登录页
-    '/admin'         => 'admin/Index/index', // 后台首页
-    '/admin/doLogin' => 'admin/Index/do_login', // 后台登录操作
-    '/index_v1'      => 'admin/Index/index_v1', // 后台首页欢迎页
-    '/admin/list'    => 'admin/Index/lists', // 后台管理员列表
-    '/admin/add'     => 'admin/Index/add', // 后台添加管理员
-    '/admin/edit'    => 'admin/Index/edit', // 后台添加管理员
-    '/admin/del'     => 'admin/Index/del', // 后台添加管理员
-    '/menu/list'     => 'admin/Menu/lists', // 菜单列表
-    '/menu/edit'     => 'admin/Menu/edit', // 编辑菜单
-    '/menu/add'      => 'admin/Menu/add', // 添加菜单
-    '/menu/del'      => 'admin/Menu/del', // 删除菜单
-    '/menu/power'    => 'admin/Menu/power', // 菜单权限管理
+    '/'               => 'Index/index',
+    '/login'          => 'admin/Index/login', // 后台登录页
+    '/admin'          => 'admin/Index/index', // 后台首页
+    '/admin/doLogin'  => 'admin/Index/do_login', // 后台登录操作
+    '/admin/index_v1' => 'admin/Index/index_v1', // 后台首页欢迎页
+    '/admin/list'     => 'admin/Index/lists', // 后台管理员列表
+    '/admin/add'      => 'admin/Index/add', // 后台添加管理员
+    '/admin/edit'     => 'admin/Index/edit', // 后台添加管理员
+    '/admin/del'      => 'admin/Index/del', // 后台添加管理员
+    '/menu/list'      => 'admin/Menu/lists', // 菜单列表
+    '/menu/edit'      => 'admin/Menu/edit', // 编辑菜单
+    '/menu/add'       => 'admin/Menu/add', // 添加菜单
+    '/menu/del'       => 'admin/Menu/del', // 删除菜单
+    '/menu/power'     => 'admin/Menu/power', // 菜单权限管理
 ];

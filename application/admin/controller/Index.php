@@ -15,8 +15,13 @@ class Index extends \think\Controller
     {
         $admin = Session::get('admin');
         if ($admin) {
-            $menu = $this->get_menus($admin['role_id']);
-            return $this->fetch('index', ['admin' => $admin, 'menu' => $menu]);
+            $menu     = $this->get_menus($admin['role_id']);
+            $m        = new MenuModel();
+            $where    = ['is_delete' => 0, 'is_hide' => 0];
+            $list     = $m->getList($where, 'identity,`name`');
+            $list     = array_column($list, 'name', 'identity');
+            $menu_str = json_encode($list);
+            return $this->fetch('index', ['admin' => $admin, 'menu' => $menu, 'menu_str' => $menu_str]);
         }
         return $this->fetch('login', ['info' => '']);
     }
@@ -38,8 +43,8 @@ class Index extends \think\Controller
             }
             $where['id'] = ['in', $menu_ids];
         }
-        $menu = new MenuModel();
-        $list = $menu->getList($where, true, null, 'orders');
+        $m    = new MenuModel();
+        $list = $m->getList($where, true, null, 'orders');
         $arr  = [];
         foreach ($list as $item) {
             if ($item['pid'] === 0) {
