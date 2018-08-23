@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
     <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/paging.css">
 </head>
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -44,6 +45,11 @@
                             </tr>
                             {/foreach}
                         </tbody>
+                        <footer>
+                            <tr>
+                                <td colspan="6"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
+                            </tr>
+                        </footer>
                     </table>
                 </div>
             </div>
@@ -53,6 +59,7 @@
 </body>
 <script type="text/javascript" src="https://cdn.staticfile.org/jquery/2.1.4/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/h+/js/paging-min.js"></script>
 <script type="text/javascript">
     $(function(){
         $('a[data-action]').click(function(){

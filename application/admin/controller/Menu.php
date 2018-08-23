@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use app\admin\model\MenuModel;
 use app\admin\model\RoleAccessModel;
 use app\admin\model\RoleModel;
+use think\Config;
 
 class Menu extends \think\Controller
 {
@@ -83,12 +84,18 @@ class Menu extends \think\Controller
      */
     public function lists()
     {
-        $r     = new RoleModel();
-        $m     = new MenuModel();
-        $roles = $r->getList();
-        $list  = $m->getList(['is_delete' => 0], true, null, 'orders');
-        // print_r($list);exit;
-        return $this->fetch('list', ['list' => $list, 'roles' => $roles]);
+        $r        = new RoleModel();
+        $m        = new MenuModel();
+        $roles    = $r->getList();
+        $where    = ['is_delete' => 0];
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = config('PAGESIZE');
+        $start    = $page - 1;
+        $list     = $m->getList($where, true, "$start,$pagesize", 'orders');
+        // var_dump($list);exit;
+        $count = $m->getCount($where);
+        $pages = ceil($count / $pagesize);
+        return $this->fetch('list', ['list' => $list, 'roles' => $roles, 'pages' => $pages]);
     }
 
     /**
