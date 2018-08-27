@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商家充值</title>
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
+    <!-- Data Tables -->
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/plugins/iCheck/custom.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
+    <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
+    <style type="text/css">
+        .form-control{width: 200px;}
+        .col-sm-10{display: inline-block;}
+        #zfb{width: 150px;}
+        #yhk{display: none;font-size: 14px;}
+        #yhk span{color: #f00;font-weight: bold;font-size: 20px;}
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form class="form-horizontal" onsubmit="return false">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">充值金额</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="amount">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">充值方式</label>
+                            <div class="col-sm-11">
+                                <div class="radio i-checks">
+                                    <label><input type="radio" value="0" name="paymode" checked="checked"><i></i>支付宝</label>
+                                    <label><input type="radio" value="1" name="paymode"><i></i>银行卡</label>
+                                </div>
+                                <img src="/static/uploadifive/zhifubao-bai.png" id="zfb">
+                                <div id="yhk">中国银行 <span>6217 887 6000 0038 8586</span> 吴志勇</div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">交易单号</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="order">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">充值截图</label>
+                            <div class="col-sm-11">
+                                <table width="100%">
+                                    <tr>
+                                        <td valign="top"><input id="file_upload" name="file_upload" type="file"></td>
+                                        <td valign="top"><input class="btn btn-primary" type="button" data-action="upload" value="上传"></td>
+                                    </tr>
+                                    <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="img"></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <input class="btn btn-primary" type="button" data-action="save" value="保存内容">
+                                <input class="btn btn-white" type="button" data-action="cancel" value="取消">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        // $('input[name="paymode"]:checked').val()
+        $('input[name="paymode"]').click(function(){
+            if ($(this).val() == 0) {
+                $('#yhk').css('display', 'none');
+                $('#zfb').css('display', 'inline-block');
+            } else {
+                $('#yhk').css('display', 'inline-block');
+                $('#zfb').css('display', 'none');
+            }
+        })
+        $('input[data-action]').click(function(){
+            $action = $(this).data('action');
+            if ($action == 'save') {
+            } else if ($action == 'cancel') {
+                parent.layer.closeAll();
+            } else if ($action == 'upload') {
+                $('#file_upload').uploadifive('upload');
+            }
+        });
+        $('#file_upload').uploadifive({
+            'auto'             : false,
+            'buttonText'       : '选择图片',
+            'queueID'          : 'progress',
+            'fileTypeDesc'     : 'Image Files',
+            'fileTypeExts'     : '*.jpg;*.gif;*.png',
+            'multi'            : false,
+            'removeCompleted'  : true,
+            'formData'         : {
+                'timestamp' : '{$time}',
+                'token'     : '{$token}'
+            },
+            'uploadScript'     : '/upload',
+            'onUploadComplete' : function(file, data) {
+                // data = eval('(' + data + ')');
+                data = JSON.parse(data);
+                $('#img').val(data.path);
+                $('#thumb').attr('src', '/uploads/' + data.path);
+            }
+        });
+    });
+</script>
+</html>

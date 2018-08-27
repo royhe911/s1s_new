@@ -42,12 +42,14 @@
                             <span class="fa arrow"></span>
                         </a>
                         <ul class="nav nav-second-level">
+                            {if(!empty($item['children']))}
                             {foreach $item['children'] as $son_item}
                             <li>
                                 <a class="J_menuItem" data-url="{$son_item.url}" href="#{$son_item.identity}">{$son_item['name']}</a>
                                 <!-- <a class="J_menuItem" href="{$son_item.url}">{$son_item['name']}</a> -->
                             </li>
                             {/foreach}
+                            {/if}
                         </ul>
                     </li>
                     {/foreach}
@@ -84,7 +86,7 @@
                         <a href="javascript:;" class="active J_menuTab" data-id="/index_v1">首页</a>
                     </div>
                 </nav>
-                <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i></button>
+                <!-- <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i></button>
                 <div class="btn-group roll-nav roll-right">
                     <button class="dropdown J_tabClose" data-toggle="dropdown">关闭操作<span class="caret"></span></button>
                     <ul role="menu" class="dropdown-menu dropdown-menu-right">
@@ -93,7 +95,7 @@
                         <li class="J_tabCloseAll"><a>关闭全部选项卡</a></li>
                         <li class="J_tabCloseOther"><a>关闭其他选项卡</a></li>
                     </ul>
-                </div>
+                </div> -->
                 <a href="/login?action=out" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 注销</a>
             </div>
             <div class="row J_mainContent" id="content-main">

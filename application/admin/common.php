@@ -32,3 +32,12 @@ function get_user_status($status = 0)
     }
     return $status_txt;
 }
+
+/**
+ * 获取毫秒数
+ */
+function get_millisecond()
+{
+    list($microsecond, $time) = explode(' ', microtime()); //' '中间是一个空格
+    return (float) sprintf('%.0f', (floatval($microsecond) + floatval($time)) * 1000);
+}

@@ -6,6 +6,9 @@ use app\admin\model\MenuModel;
 use app\admin\model\RoleAccessModel;
 use think\Session;
 
+/**
+ * 后台管理
+ */
 class Index extends \think\Controller
 {
     /**
