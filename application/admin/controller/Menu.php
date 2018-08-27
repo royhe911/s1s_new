@@ -13,6 +13,7 @@ class Menu extends \think\Controller
      */
     public function add(MenuModel $m)
     {
+        $admin = $this->is_login();
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             if (empty($param['identity']) || empty($param['name'])) {
@@ -42,6 +43,7 @@ class Menu extends \think\Controller
      */
     public function del(MenuModel $m)
     {
+        $admin = $this->is_login();
         $id  = $this->request->post('id');
         $res = $m->modifyField('is_delete', 1, ['id' => $id]);
         if ($res) {
@@ -56,6 +58,7 @@ class Menu extends \think\Controller
      */
     public function edit(MenuModel $m)
     {
+        $admin = $this->is_login();
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             if (empty($param['id']) || empty($param['identity']) || empty($param['name'])) {
@@ -83,6 +86,7 @@ class Menu extends \think\Controller
      */
     public function lists()
     {
+        $admin = $this->is_login();
         $r        = new RoleModel();
         $m        = new MenuModel();
         $roles    = $r->getList();
@@ -101,6 +105,7 @@ class Menu extends \think\Controller
      */
     public function power()
     {
+        $admin = $this->is_login();
         $ra = new RoleAccessModel();
         if ($this->request->isAjax()) {
             $param = $this->request->post();

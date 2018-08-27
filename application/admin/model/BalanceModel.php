@@ -23,9 +23,9 @@ class BalanceModel extends CommonModel
         if (empty($data['uid']) || !is_numeric($data['uid'])) {
             return 2;
         }
-        $m = new MerchantModel();
+        $a = new AdminModel();
         // 查询用户是否存在
-        $merchant = $m->getModel(['id' => $data['uid']], '`status`,balance,nickname,s_id');
+        $merchant = $a->getModel(['id' => $data['uid']], '`status`,balance,nickname,s_id');
         if (empty($merchant)) {
             return 2;
         }

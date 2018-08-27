@@ -68,6 +68,19 @@ class Controller
     }
 
     /**
+     * 判断用户是否登录
+     */
+    protected function is_login()
+    {
+        $admin  = Session::get('admin');
+        $action = $this->request->get('action');
+        if (empty($admin) && empty($action)) {
+            $this->error('登录超时，请重新登录', url('/admin/login?action=logout'));
+        }
+        return $admin;
+    }
+
+    /**
      * 前置操作
      * @access protected
      * @param string $method  前置操作方法名

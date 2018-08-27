@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\BalanceModel;
+use app\admin\model\RechargeModel;
 
 /**
  * 财务管理
@@ -13,6 +14,7 @@ class Finance extends \think\Controller
      */
     public function recharge(BalanceModel $b)
     {
+        $admin = $this->is_login();
         if ($this->request->isAjax()) {
             $uid      = $this->request->post('uid'); // 充值商家ID
             $amount   = $this->request->post('amount'); // 充值金额
@@ -60,9 +62,40 @@ class Finance extends \think\Controller
     /**
      * 充值记录
      */
-    public function rechargelog()
+    public function rechargelog(RechargeModel $r)
     {
-        return $this->fetch('rechargelog');
+        $admin   = $this->is_login();
+        $where   = [];
+        $keyword = $this->request->post('keyword');
+        if (!empty($keyword)) {
+            $where['nickname'] = ['like', "%{$keyword}%"];
+        }
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $r->getList($where, true, "$page,$pagesize", "`status`,addtime desc");
+        if ($list) {
+            foreach ($list as &$item) {
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                } else {
+                    $item['addtime'] = '';
+                }
+                switch (intval($item['status'])) {
+                    case 0:
+                        $item['status_txt'] = '待审核';
+                        break;
+                    case 1:
+                        $item['status_txt'] = '审核不通过';
+                        break;
+                    default:
+                        $item['status_txt'] = '已审核';
+                        break;
+                }
+            }
+        }
+        $count = $r->getCount($where);
+        $pages = ceil($count / $pagesize);
+        return $this->fetch('rechargelog', ['list' => $list, 'pages' => $pages, 'role_id' => $admin['role_id']]);
     }
 
     /**
@@ -70,7 +103,7 @@ class Finance extends \think\Controller
      */
     public function detail()
     {
-        # code...
+        $admin = $this->is_login();
     }
 
     /**
@@ -78,7 +111,7 @@ class Finance extends \think\Controller
      */
     public function putforward()
     {
-        # code...
+        $admin = $this->is_login();
     }
 
     /**
@@ -86,6 +119,6 @@ class Finance extends \think\Controller
      */
     public function supplement()
     {
-        # code...
+        $admin = $this->is_login();
     }
 }

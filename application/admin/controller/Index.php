@@ -16,7 +16,7 @@ class Index extends \think\Controller
      */
     public function index()
     {
-        $admin = Session::get('admin');
+        $admin = $this->is_login();
         if ($admin) {
             $menu     = $this->get_menus($admin['role_id']);
             $m        = new MenuModel();
@@ -68,6 +68,7 @@ class Index extends \think\Controller
      */
     public function index_v1()
     {
+        $admin = $this->is_login();
         return view('index_v1');
     }
 
@@ -102,6 +103,10 @@ class Index extends \think\Controller
         if ($pwd !== $admin['pwd']) {
             return ['status' => 1, 'info' => '用户名或密码错误'];
         }
+        if ($admin['status'] !== 8) {
+            return ['status' => 3, 'info' => '账号审核不通过或被禁用，请联系管理员'];
+        }
+        unset($admin['pwd'], $admin['salt']);
         $a->modifyField('logintime', time(), ['id' => $admin['id']]);
         session('admin', $admin);
         // return $this->fetch('login', ['admin'=>$admin, 'status'=>'success']);
@@ -115,6 +120,7 @@ class Index extends \think\Controller
      */
     public function add(AdminModel $a)
     {
+        $admin = $this->is_login();
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             $salt  = get_random_str(); // 生成密码盐
@@ -131,7 +137,8 @@ class Index extends \think\Controller
      */
     public function del(AdminModel $a)
     {
-        $ids = $this->request->post('ids');
+        $admin = $this->is_login();
+        $ids   = $this->request->post('ids');
         if (empty($ids) || !preg_match('/^0[\,\d+]+$/', $ids)) {
             return ['status' => 3, 'info' => '非法参数'];
         }
@@ -150,6 +157,7 @@ class Index extends \think\Controller
      */
     public function lists(AdminModel $a)
     {
+        $admin = $this->is_login();
         $where = ['is_delete' => 0];
         if ($this->request->isPost()) {
             $param = $this->request->post();

@@ -18,6 +18,7 @@
         #zfb{width: 150px;}
         #yhk{display: none;font-size: 14px;}
         #yhk span{color: #f00;font-weight: bold;font-size: 20px;}
+        .red{color: #f00;font-size: 18px;}
     </style>
 </head>
 <body class="gray-bg">
@@ -28,14 +29,14 @@
                 <div class="ibox-content">
                     <form class="form-horizontal" onsubmit="return false">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">充值金额</label>
+                            <label class="col-sm-2 control-label"><span class="red">*</span>充值金额</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="amount">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">充值方式</label>
+                            <label class="col-sm-2 control-label"><span class="red">*</span>充值方式</label>
                             <div class="col-sm-11">
                                 <div class="radio i-checks">
                                     <label><input type="radio" value="0" name="paymode" checked="checked"><i></i>支付宝</label>
@@ -47,14 +48,14 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">交易单号</label>
+                            <label class="col-sm-2 control-label"><span class="red">*</span>交易单号</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="order">
+                                <input type="text" class="form-control" id="orders">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">充值截图</label>
+                            <label class="col-sm-2 control-label"><span class="red">*</span>充值截图</label>
                             <div class="col-sm-11">
                                 <table width="100%">
                                     <tr>
@@ -97,6 +98,36 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
+                var a = $('#amount'), p = $('input[name="paymode"]').is(':checked'), o = $('#orders'), i = $('#img');
+                var reg = /^(\d+)(\.\d{1,2})?$/;
+                if (a.val() == '' || !reg.test(a.val())) {
+                    layer.msg('金额输入错误', {icon: 3}, function(){a.focus()});
+                    return false
+                }
+                if (!p) {
+                    layer.msg('请选择充值方式', {icon: 3});
+                    return false
+                }
+                if (o.val() == '') {
+                    layer.msg('请填写交易单号', {icon: 3}, function(){o.focus()});
+                    return false
+                }
+                if (i.val() == '') {
+                    layer.msg('请上传充值截图', {icon: 3});
+                    return false
+                }
+                $.ajax({
+                    type: 'post', cache: false, dataType: 'json',
+                    url: '/finance/recharge',
+                    data: {'amount': $a.val(), 'paymode': $p, 'orders': $o.val(), 'img': $i.val()},
+                    success: function(data){
+                        if (data.status == 0) {
+                            layer.msg(data.info, {icon: 6, time: 2000});
+                        } else {
+                            layer.msg(data.info, {icon: 5, time: 3000})
+                        }
+                    }
+                })
             } else if ($action == 'cancel') {
                 parent.layer.closeAll();
             } else if ($action == 'upload') {
