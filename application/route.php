@@ -26,5 +26,6 @@ return [
     '/menu/power'          => 'admin/Menu/power', // 菜单权限管理
     '/finance/recharge'    => 'admin/Finance/recharge', //商家充值
     '/finance/rechargelog' => 'admin/Finance/rechargelog', //商家充值
+    '/finance/auditor'     => 'admin/Finance/auditor', //商家充值审核
     '/upload'              => 'admin/Upload/upload_img', // 上传文件
 ];

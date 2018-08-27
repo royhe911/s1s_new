@@ -26,7 +26,7 @@ class Upload extends \think\Controller
         $tmp_file   = $file['tmp_name'];
         $upload_dir = date('Y') . '/' . date('m') . '/' . date('d');
         if (!is_dir($root_path . $upload_dir)) {
-            @mkdir($upload_dir, 0755, true);
+            @mkdir($root_path . $upload_dir, 0755, true);
         }
         if (!in_array(strtolower($fileinfo['extension']), $file_types)) {
             return json(['status' => 3, 'info' => '文件类型不合法']);

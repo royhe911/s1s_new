@@ -25,11 +25,11 @@ class BalanceModel extends CommonModel
         }
         $a = new AdminModel();
         // 查询用户是否存在
-        $merchant = $a->getModel(['id' => $data['uid']], '`status`,balance,nickname,s_id');
+        $merchant = $a->getModel(['id' => $data['uid']], '`status`,balance');
         if (empty($merchant)) {
             return 2;
         }
-        // 判断用户状态是否可以充值
+        // 判断用户状态是否可以进行操作
         switch (intval($merchant['status'])) {
             case 0:
                 return 3;
@@ -41,8 +41,10 @@ class BalanceModel extends CommonModel
                 return 5;
                 break;
         }
-        // 开启事务给用户充值
+        // 开启事务操作用户余额
         Db::startTrans();
+        $amount      = $data['amount'];
+        $uid         = $data['uid'];
         $after_money = $merchant['balance'] + $amount;
         $log         = [
             'uid'          => $uid,
@@ -53,21 +55,25 @@ class BalanceModel extends CommonModel
             'addtime'      => time(),
         ];
         if ($type === 2) {
-            $data['s_id']     = $merchant['s_id'];
-            $data['nickname'] = $merchant['nickname'];
-            $data['addtime']  = time();
-            $r                = new RechargeModel();
-            $res              = $r->add($data);
+            // 如果是充值，修改充值状态
+            $r   = new RechargeModel();
+            $res = $r->modifyField('status', $data['status'], ['id' => $data['id']]);
             if (!$res) {
                 Db::rollback();
                 return 8;
             }
+        } elseif ($type === 3) {
+            // 如果是发布任务，修改任务状态
+            $p  = new ProductModel();
+            $pr = new ProductArrModel();
         }
-        $res = $m->modifyField('balance', $after_money, ['id' => $uid]);
+        // 修改对应用户余额
+        $res = $a->modifyField('balance', $after_money, ['id' => $uid]);
         if (!$res) {
             Db::rollback();
             return 6;
         }
+        // 添加金额变动流水记录
         $b   = new BalanceModel();
         $res = $b->add($log);
         if (!$res) {

@@ -39,8 +39,8 @@
                             <label class="col-sm-2 control-label"><span class="red">*</span>充值方式</label>
                             <div class="col-sm-11">
                                 <div class="radio i-checks">
-                                    <label><input type="radio" value="0" name="paymode" checked="checked"><i></i>支付宝</label>
-                                    <label><input type="radio" value="1" name="paymode"><i></i>银行卡</label>
+                                    <label><input type="radio" value="1" name="paymode" checked="checked"><i></i>支付宝</label>
+                                    <label><input type="radio" value="2" name="paymode"><i></i>银行卡</label>
                                 </div>
                                 <img src="/static/uploadifive/zhifubao-bai.png" id="zfb">
                                 <div id="yhk">中国银行 <span>6217 887 6000 0038 8586</span> 吴志勇</div>
@@ -85,7 +85,6 @@
 <script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.min.js"></script>
 <script type="text/javascript">
     $(function(){
-        // $('input[name="paymode"]:checked').val()
         $('input[name="paymode"]').click(function(){
             if ($(this).val() == 0) {
                 $('#yhk').css('display', 'none');
@@ -98,7 +97,7 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var a = $('#amount'), p = $('input[name="paymode"]').is(':checked'), o = $('#orders'), i = $('#img');
+                var a = $('#amount'), p = $('input[name="paymode"]:checked').val(), o = $('#orders'), i = $('#img');
                 var reg = /^(\d+)(\.\d{1,2})?$/;
                 if (a.val() == '' || !reg.test(a.val())) {
                     layer.msg('金额输入错误', {icon: 3}, function(){a.focus()});
@@ -119,10 +118,13 @@
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
                     url: '/finance/recharge',
-                    data: {'amount': $a.val(), 'paymode': $p, 'orders': $o.val(), 'img': $i.val()},
+                    data: {'amount': a.val(), 'paymode': p, 'orders': o.val(), 'img': i.val()},
                     success: function(data){
                         if (data.status == 0) {
-                            layer.msg(data.info, {icon: 6, time: 2000});
+                            layer.msg(data.info, {icon: 6, time: 2000}, function(){
+                                parent.location.reload();
+                                parent.layer.closeAll();
+                            })
                         } else {
                             layer.msg(data.info, {icon: 5, time: 3000})
                         }
