@@ -16,7 +16,7 @@ class Index extends \think\Controller
      */
     public function index()
     {
-        $admin = $this->is_login();
+        $admin  = Session::get('admin');
         if ($admin) {
             $menu     = $this->get_menus($admin['role_id']);
             $m        = new MenuModel();
