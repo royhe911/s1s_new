@@ -24,8 +24,9 @@ return [
     '/menu/add'            => 'admin/Menu/add', // 添加菜单
     '/menu/del'            => 'admin/Menu/del', // 删除菜单
     '/menu/power'          => 'admin/Menu/power', // 菜单权限管理
-    '/finance/recharge'    => 'admin/Finance/recharge', //商家充值
-    '/finance/rechargelog' => 'admin/Finance/rechargelog', //商家充值
-    '/finance/auditor'     => 'admin/Finance/auditor', //商家充值审核
+    '/finance/recharge'    => 'admin/Finance/recharge', // 商家充值
+    '/finance/rechargelog' => 'admin/Finance/rechargelog', // 商家充值
+    '/finance/auditor'     => 'admin/Finance/auditor', // 商家充值审核
+    '/finance/detail'      => 'admin/Finance/detail', // 收支明细
     '/upload'              => 'admin/Upload/upload_img', // 上传文件
 ];

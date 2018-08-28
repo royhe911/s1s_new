@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\AdminModel;
 use app\admin\model\BalanceModel;
 use app\admin\model\RechargeModel;
 
@@ -137,9 +138,77 @@ class Finance extends \think\Controller
     /**
      * 收支明细
      */
-    public function detail()
+    public function detail(BalanceModel $b)
     {
+        // 判断用户是否登录
         $admin = $this->is_login();
+        $where = "is_delete=0";
+        $a     = new AdminModel();
+        if ($admin['role_id'] === 2 || $admin['role_id'] === 4 || $admin['role_id'] === 5) {
+            // 若登录角色是业务员或客服主管理或客服，则只能看到他名下的商家收支明细
+            $ids  = '0';
+            $sarr = $a->getList(['s_id' => $admin['id']], 'id');
+            foreach ($sarr as $sa) {
+                $ids .= ",{$sa['id']}";
+            }
+            $where .= " and uid in ($ids)";
+        } elseif ($admin['role_id'] === 3) {
+            // 若登录角色是商家，则只能看到他自己的收支明细
+            $where .= " and uid={$admin['id']}";
+        }
+        // 获取查询条件
+        $keyword = $this->request->post('keyword', '');
+        if (!empty($keyword)) {
+            $k_ids = "0";
+            $bns   = $a->getList(['is_delete' => 0, 'nickname' => ['like', "%{$keyword}%"]], 'id');
+            foreach ($bns as $s) {
+                $k_ids .= ",{$s['id']}";
+            }
+            $where .= " and uid in ($k_ids)";
+        }
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $b->getList($where, true, "$page,$pagesize", 'addtime desc');
+        if ($list) {
+            $business = $this->getBusiness();
+            foreach ($list as &$item) {
+                if (!empty($business[$item['uid']])) {
+                    $item['business'] = $business[$item['uid']];
+                }
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                }
+                switch ($item['type']) {
+                    case 1:
+                        $item['remark'] = '提现';
+                        break;
+                    case 2:
+                        $item['remark'] = '充值';
+                        break;
+                    case 3:
+                        $item['remark'] = '发布任务费用扣除';
+                        break;
+                    case 4:
+                        $item['remark'] = '退单退款';
+                        break;
+                    case 5:
+                        $item['remark'] = '下架退款';
+                        break;
+                    case 6:
+                        $item['remark'] = '订单异常返款';
+                        break;
+                    case 7:
+                        $item['remark'] = '实际下单价大于发布价，扣除差价';
+                        break;
+                    case 8:
+                        $item['remark'] = '实际下单价小于发布价，补偿差价';
+                        break;
+                }
+            }
+        }
+        $count = $b->getCount($where);
+        $pages = ceil($count / $pagesize);
+        return $this->fetch('detail', ['list' => $list, 'pages' => $pages, 'keyword' => $keyword]);
     }
 
     /**
@@ -156,5 +225,16 @@ class Finance extends \think\Controller
     public function supplement()
     {
         $admin = $this->is_login();
+    }
+
+    /**
+     * 获取商家列表
+     */
+    private function getBusiness()
+    {
+        $a    = new AdminModel();
+        $list = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,nickname');
+        $list = array_column($list, 'nickname', 'id');
+        return $list;
     }
 }

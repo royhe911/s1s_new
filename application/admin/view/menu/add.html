@@ -119,12 +119,8 @@
                 data: {'pid': pid.val(), 'identity': identity.val(), 'name': name.val(), 'url': url.val(), 'orders': orders, 'is_hide': is_hide},
                 success: function(data){
                     if (data.status == 0) {
-                        layer.confirm(data.info + '<br />是否继续添加？', function(y){
-                            if (y) {
-                                location.reload();
-                            }else{
-                                location.href = '/menu/list';
-                            }
+                        layer.msg(data.info, function(){
+                            location.href = '/menu/list';
                         });
                     }else{
                         layer.msg(data.info, {icon: 5, time: 2000});
