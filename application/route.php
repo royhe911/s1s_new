@@ -18,7 +18,7 @@ return [
     '/admin/list'          => 'admin/Index/lists', // 后台管理员列表
     '/admin/add'           => 'admin/Index/add', // 后台添加管理员
     '/admin/edit'          => 'admin/Index/edit', // 后台添加管理员
-    '/admin/del'           => 'admin/Index/del', // 后台添加管理员
+    '/admin/operation'     => 'admin/Index/operation', // 后台操作管理员
     '/menu/list'           => 'admin/Menu/lists', // 菜单列表
     '/menu/edit'           => 'admin/Menu/edit', // 编辑菜单
     '/menu/add'            => 'admin/Menu/add', // 添加菜单

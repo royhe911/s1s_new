@@ -16,11 +16,11 @@ class Index extends \think\Controller
      */
     public function index()
     {
-        $admin  = Session::get('admin');
+        $admin = Session::get('admin');
         if ($admin) {
             $menu     = $this->get_menus($admin['role_id']);
             $m        = new MenuModel();
-            $where    = ['is_delete' => 0, 'is_hide' => 0];
+            $where    = ['is_delete' => 0];
             $list     = $m->getList($where, 'identity,`name`');
             $list     = array_column($list, 'name', 'identity');
             $menu_str = json_encode($list);
@@ -99,7 +99,7 @@ class Index extends \think\Controller
         if (empty($admin)) {
             return ['status' => 2, 'info' => '用户名或密码错误'];
         }
-        $pwd = substr(md5($param['pwd'] . $admin['salt']), 5, 27);
+        $pwd = get_password($param['pwd'], $admin['salt']);
         if ($pwd !== $admin['pwd']) {
             return ['status' => 1, 'info' => '用户名或密码错误'];
         }
@@ -114,7 +114,7 @@ class Index extends \think\Controller
     }
 
     /**
-     * 添加管理员账号
+     * 添加用户账号
      * @param  AdminModel $a AdminModel 实例
      * @return bool          返回添加是否成功
      */
@@ -123,30 +123,110 @@ class Index extends \think\Controller
         $admin = $this->is_login();
         if ($this->request->isAjax()) {
             $param = $this->request->post();
-            $salt  = get_random_str(); // 生成密码盐
-            var_dump($salt);exit;
+            if (empty($param['uid']) || empty($param['pwd']) || empty($param['role_id'])) {
+                return ['status' => 1, 'info' => '非法参数'];
+            }
+            $has = $a->getCount(['is_delete' => 0, 'uid' => $param['uid']]);
+            if (!empty($has)) {
+                return ['status' => 2, 'info' => '该账号已存在'];
+            }
+            $salt             = get_random_str(); // 生成密码盐
+            $param['salt']    = $salt;
+            $param['pwd']     = get_password($param['pwd'], $salt);
+            $param['addtime'] = time();
+            $param['status']  = 8;
+            $res              = $a->add($param);
+            if (!$res) {
+                return ['status' => 4, 'info' => '添加失败'];
+            }
+            return ['status' => 0, 'info' => '添加成功'];
         } else {
-            return $this->fetch('add');
+            $roles    = $this->getRoles();
+            $salesman = $this->getSalesman();
+            $time     = time();
+            return $this->fetch('add', ['roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
     }
 
     /**
      * 删除用户
      * @param  AdminModel $a AdminModel 实例
-     * @return bool          返回是否删除成功
      */
-    public function del(AdminModel $a)
+    public function operation(AdminModel $a)
     {
         $admin = $this->is_login();
         $ids   = $this->request->post('ids');
         if (empty($ids) || !preg_match('/^0[\,\d+]+$/', $ids)) {
             return ['status' => 3, 'info' => '非法参数'];
         }
-        $res = $a->modifyField('is_delete', 1, ['id' => ['in', $ids]]);
-        if ($res) {
-            return ['status' => 0, 'info' => '删除成功'];
+        $type = $this->request->post('type');
+        if (empty($type)) {
+            return ['status' => 1, 'info' => '非法操作'];
+        }
+        if ($type === 'del' || $type === 'delAll') {
+            $field = 'is_delete';
+            $value = 1;
+            $msg   = '删除';
+        } elseif ($type === 'disable' || $type === 'disableAll') {
+            $field = 'status';
+            $value = 6;
+            $msg   = '禁用';
         } else {
-            return ['status' => 4, 'info' => '删除失败'];
+            return ['status' => 2, 'info' => '非法操作'];
+        }
+        $res = $a->modifyField($field, $value, ['id' => ['in', $ids]]);
+        if ($res) {
+            return ['status' => 0, 'info' => $msg . '成功'];
+        } else {
+            return ['status' => 4, 'info' => $msg . '失败'];
+        }
+    }
+
+    /**
+     * 修改用户
+     * @param  AdminModel $a AdminModel 实例
+     */
+    public function edit(AdminModel $a)
+    {
+        $admin = $this->is_login();
+        if ($this->request->isAjax()) {
+            $param = $this->request->post();
+            $id    = $admin['id'];
+            if ($admin['role_id'] === 1) {
+                $id = $param['id'];
+            } elseif ($admin['uid'] !== $param['uid']) {
+                return ['status' => 1, 'info' => '非法操作，只能修改自己的账号'];
+            }
+            unset($param['uid']);
+            if (!empty($param['pwd'])) {
+                $salt          = get_random_str(); // 生成密码盐
+                $param['salt'] = $salt;
+                $param['pwd']  = get_password($param['pwd'], $salt);
+            } else {
+                unset($param['pwd']);
+            }
+            if (empty($param['avatar'])) {
+                unset($param['avatar']);
+            }
+            $param['updatetime'] = time();
+            $res                 = $a->modify($param, ['id' => $id]);
+            if (!$res) {
+                return ['status' => 4, 'info' => '修改失败'];
+            }
+            return ['status' => 0, 'info' => '修改成功'];
+        } else {
+            $id = $this->request->get('id');
+            if (empty($id) || !is_numeric($id)) {
+                $id = $admin['id'];
+            }
+            $user = $a->getModel(['id' => $id]);
+            if (empty($user)) {
+                $this->error('用户不存在');
+            }
+            $roles    = $this->getRoles();
+            $salesman = $this->getSalesman();
+            $time     = time();
+            return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
     }
 
@@ -157,26 +237,33 @@ class Index extends \think\Controller
      */
     public function lists(AdminModel $a)
     {
-        $admin = $this->is_login();
-        $where = ['is_delete' => 0];
+        $admin   = $this->is_login();
+        $where   = ['is_delete' => 0];
+        $keyword = '';
+        $type    = 0;
         if ($this->request->isPost()) {
             $param = $this->request->post();
             // print_r($param);exit;
             if (!empty($param['keyword'])) {
-                $where['mobile|email|qq|wx'] = ['like', "%{$param['keyword']}%"];
+                $where['mobile|email|qq|wx'] = $keyword = ['like', "%{$param['keyword']}%"];
             }
             if (!empty($param['type']) && is_numeric($param['type'])) {
-                $where['type'] = $param['type'];
+                $where['role_id'] = $type = $param['type'];
             }
         }
         $list = $a->getList($where);
         // print_r($list);exit;
         foreach ($list as &$item) {
             $item['status_txt'] = get_user_status($item['status']);
-            $item['logintime']  = date('Y-m-d H:i:s', $item['logintime']);
-            $item['addtime']    = date('Y-m-d H:i:s', $item['addtime']);
+            if (!empty($item['logintime'])) {
+                $item['logintime'] = date('Y-m-d H:i:s', $item['logintime']);
+            }
+            if (!empty($item['addtime'])) {
+                $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+            }
         }
-        return $this->fetch('list', ['list' => $list]);
+        $roles = $this->getRoles();
+        return $this->fetch('list', ['list' => $list, 'roles' => $roles, 'keyword' => $keyword, 'type' => $type]);
     }
 
 }

@@ -13,6 +13,8 @@ namespace think;
 
 \think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
+use app\admin\model\AdminModel;
+use app\admin\model\RoleModel;
 use think\Exception;
 use think\exception\ValidateException;
 
@@ -78,6 +80,34 @@ class Controller
             $this->error('登录超时，请重新登录', url('/admin/login'));
         }
         return $admin;
+    }
+
+    /**
+     * 获取商家列表
+     */
+    protected function getBusiness()
+    {
+        $a    = new AdminModel();
+        $list = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,nickname');
+        $list = array_column($list, 'nickname', 'id');
+        return $list;
+    }
+
+    /**
+     * 获取用户角色
+     */
+    protected function getRoles()
+    {
+        $r    = new RoleModel();
+        $list = $r->getList(['is_delete' => 0], 'id,`name`');
+        return $list;
+    }
+
+    protected function getSalesman()
+    {
+        $a    = new AdminModel();
+        $list = $a->getList(['is_delete' => 0, 'role_id' => 2], 'id,`nickname`');
+        return $list;
     }
 
     /**

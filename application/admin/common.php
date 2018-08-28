@@ -22,12 +22,19 @@ function get_random_str($num = 8)
  */
 function get_user_status($status = 0)
 {
+    $status_txt = '';
     switch ($status) {
-        case 1:
+        case 0:
+            $status_txt = '待审核';
+            break;
+        case 4:
+            $status_txt = '审核不通过';
+            break;
+        case 6:
             $status_txt = '禁用';
             break;
-        default:
-            $status_txt = '启用';
+        case 8:
+            $status_txt = '正常';
             break;
     }
     return $status_txt;
@@ -40,4 +47,17 @@ function get_millisecond()
 {
     list($microsecond, $time) = explode(' ', microtime()); //' '中间是一个空格
     return (float) sprintf('%.0f', (floatval($microsecond) + floatval($time)) * 1000);
+}
+
+/**
+ * 生成密码
+ * @param  string  $str    明文密码
+ * @param  string  $salt   密码盐
+ * @param  integer $start  截取开始位置
+ * @param  integer $length 截取长斋
+ * @return string          返回md5加密并截取后的密码
+ */
+function get_password($str, $salt, $start = 5, $length = 27)
+{
+    return substr(md5($str . $salt), $start, $length);
 }

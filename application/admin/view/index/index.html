@@ -10,6 +10,9 @@
     <link href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
     <link href="/static/h+/css/animate.min.css" rel="stylesheet">
     <link href="/static/h+/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <style type="text/css">
+        .img-circle{width: 64px;height: 64px;}
+    </style>
 </head>
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
     <div id="wrapper">
@@ -20,14 +23,14 @@
                 <ul class="nav" id="side-menu">
                     <li class="nav-header">
                         <div class="dropdown profile-element">
-                            <span><img alt="image" class="img-circle" src="/static/h+/img/profile_small.jpg" /></span>
+                            <span><img class="img-circle" src="/uploads/{$admin['avatar']}" /></span>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
                                 <span class="block m-t-xs"><strong class="font-bold">{$admin['uid']}</strong></span>
                                 <span class="text-muted text-xs block">{$admin['realname']}<b class="caret"></b></span></span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li><a class="J_menuItem" href="/modifypwd">修改密码</a></li>
+                                <li><a class="J_menuItem" data-url="/admin/edit" href="#admin_edit">修改资料</a></li>
                                 <li class="divider"></li>
                                 <li><a href="/login?action=logout">注销</a></li>
                             </ul>

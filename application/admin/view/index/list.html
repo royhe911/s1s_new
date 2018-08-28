@@ -15,6 +15,7 @@
         .form-control{width: 220px;}
         .ttd{width: 250px;text-align: center;}
         .ttb{width: 80px;text-align: center;}
+        .avatar{width: 64px;height: 64px;border-radius: 32px;}
     </style>
 </head>
 <body class="gray-bg">
@@ -26,11 +27,13 @@
                     <form action="/admin/list" method="post">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tr>
-                            <td class="ttd"><input type="text" name="keyword" placeholder="手机号或QQ号或微信号或邮箱" class="input-sm form-control"></td>
+                            <td class="ttd"><input type="text" name="keyword" placeholder="手机号或QQ号或微信号或邮箱" class="input-sm form-control" value="{$keyword}"></td>
                             <td class="ttd">
-                                <select class="input-sm form-control input-s-sm inline" name="type">
+                                <select class="form-control" name="type">
                                     <option value="0">…用户类型…</option>
-                                    <option value="1">业务员</option>
+                                    {foreach $roles as $r}
+                                    <option value="{$r.id}"{if($type==$r.id)} selected="selected"{/if}>{$r.name}</option>
+                                    {/foreach}
                                 </select>
                             </td>
                             <td class="ttb"><input type="submit" class="btn btn-sm btn-primary" value="搜索"></td>
@@ -64,11 +67,11 @@
                         <tbody>
                         {foreach $list as $item}
                         <tr class="gradeX">
-                            <td><input type="checkbox" class="check" value="{$item['id']}"></td>
+                            <td><input type="checkbox" class="check" value="{$item.id}"></td>
                             <td>{$item.id}</td>
                             <td>{$item.realname}</td>
                             <td>{$item.nickname}</td>
-                            <td>{$item.avatar}</td>
+                            <td><img src="/uploads/{$item.avatar}" class="avatar" onerror="this.style.display='none'"></td>
                             <td>{$item.email}</td>
                             <td>{$item.mobile}</td>
                             <td>{$item.qq}</td>
@@ -76,7 +79,7 @@
                             <td>{$item.logintime}</td>
                             <td>{$item.addtime}</td>
                             <td>{$item.status_txt}</td>
-                            <td><a href="javascript:;" data-action="del" data-id="{$item['id']}">删除</a> | <a href="/admin/edit">编辑</a></td>
+                            <td><a href="javascript:;" data-action="del" data-id="{$item.id}">删除</a> | <a href="/admin/edit?id={$item.id}">编辑</a>{if($item.role_id!=1)} | <a href="javascript:;" data-action="disable" data-id="{$item.id}">禁用</a>{/if}</td>
                         </tr>
                         {/foreach}
                         </tbody>
@@ -87,7 +90,7 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="https://cdn.staticfile.org/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
 <script>
     $(function () {
@@ -99,28 +102,44 @@
             }
         });
         $('a[data-action]').click(function(){
-            var $action = $(this).data('action');
-            var $id = $(this).data('id');
-            var ly = layer.confirm('确实要删除吗？', function(){
-                if($action == 'del'){
-                    var $ids = '0,' + $id;
-                    $.ajax({
-                        type: 'post', cache: false, dataType: 'json',
-                        url: '/admin/del',
-                        data:{'ids': $ids},
-                        success: function(data){
-                            if (data.status == 0) {
-                                layer.msg(data.info, {icon: 6}, function(){
-                                    location.reload();
-                                });
-                            }else{
-                                layer.msg(data.info, {icon: 5});
-                            }
-                        }
-                    });
-                }
-            });
+            var $action = $(this).data('action'), $id = $(this).data('id');
+            var $ids = '0', $type = '';
+            if($action == 'del' || $action == 'disable'){
+                $ids = '0,' + $id;
+            } else if ($action == 'delAll' || $action == 'disableAll') {
+                $('.check').each(function(){
+                    if ($(this).is(':checked')) {
+                        $ids += (',' + $(this).val())
+                    }
+                });
+            }
+            operation($ids, $action)
         });
+
+        function operation($ids, $type) {
+            $msg = '';
+            if ($type == 'del' || $type == 'delAll') {
+                $msg = '确实要删除吗？'
+            } else if ($type == 'disable' || $type == 'disableAll') {
+                $msg = '确实要禁用吗？'
+            }
+            layer.confirm($msg, {icon: 3}, function(){
+                $.ajax({
+                    type: 'post', cache: false, dataType: 'json',
+                    url: '/admin/operation',
+                    data:{'ids': $ids, 'type': $type},
+                    success: function(data){
+                        if (data.status == 0) {
+                            layer.msg(data.info, {icon: 1, time: 2000}, function(){
+                                location.reload();
+                            });
+                        }else{
+                            layer.msg(data.info, {icon: 5})
+                        }
+                    }
+                })
+            })
+        }
     });
 </script>
 </html>

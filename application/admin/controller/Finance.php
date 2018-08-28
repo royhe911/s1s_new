@@ -226,15 +226,4 @@ class Finance extends \think\Controller
     {
         $admin = $this->is_login();
     }
-
-    /**
-     * 获取商家列表
-     */
-    private function getBusiness()
-    {
-        $a    = new AdminModel();
-        $list = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,nickname');
-        $list = array_column($list, 'nickname', 'id');
-        return $list;
-    }
 }

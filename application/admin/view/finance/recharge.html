@@ -80,7 +80,7 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="https://cdn.staticfile.org/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
 <script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.min.js"></script>
 <script type="text/javascript">
@@ -131,9 +131,9 @@
                     }
                 })
             } else if ($action == 'cancel') {
-                parent.layer.closeAll();
+                parent.layer.closeAll()
             } else if ($action == 'upload') {
-                $('#file_upload').uploadifive('upload');
+                $('#file_upload').uploadifive('upload')
             }
         });
         $('#file_upload').uploadifive({
