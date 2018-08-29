@@ -94,6 +94,7 @@ class Finance extends \think\Controller
      */
     public function auditor()
     {
+        $admin = $this->is_login();
         $param  = $this->request->post();
         $r      = new RechargeModel();
         $status = intval($param['status']);

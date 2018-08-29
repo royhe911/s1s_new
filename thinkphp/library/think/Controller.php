@@ -116,6 +116,9 @@ class Controller
         return $list;
     }
 
+    /**
+     * 获取业务员
+     */
     protected function getSalesman()
     {
         $a    = new AdminModel();
