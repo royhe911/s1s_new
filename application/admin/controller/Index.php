@@ -106,7 +106,6 @@ class Index extends \think\Controller
         if ($admin['status'] !== 8) {
             return ['status' => 3, 'info' => '账号审核不通过或被禁用，请联系管理员'];
         }
-        unset($admin['pwd'], $admin['salt']);
         $a->modifyField('logintime', time(), ['id' => $admin['id']]);
         session('admin', $admin);
         // return $this->fetch('login', ['admin'=>$admin, 'status'=>'success']);
@@ -171,14 +170,20 @@ class Index extends \think\Controller
             $field = 'status';
             $value = 6;
             $msg   = '禁用';
+        } elseif ($type == 'enable' || $type == 'enableAll') {
+            $field = 'status';
+            $value = 8;
+            $msg   = '启用';
         } else {
             return ['status' => 2, 'info' => '非法操作'];
         }
         $res = $a->modifyField($field, $value, ['id' => ['in', $ids]]);
         if ($res) {
             return ['status' => 0, 'info' => $msg . '成功'];
-        } else {
+        } elseif ($res === false) {
             return ['status' => 4, 'info' => $msg . '失败'];
+        } else {
+            return ['status' => 5, 'info' => '该账号已' . $msg];
         }
     }
 
@@ -245,7 +250,8 @@ class Index extends \think\Controller
             $param = $this->request->post();
             // print_r($param);exit;
             if (!empty($param['keyword'])) {
-                $where['mobile|email|qq|wx'] = $keyword = ['like', "%{$param['keyword']}%"];
+                $where['mobile|email|qq|wx'] = ['like', "%{$param['keyword']}%"];
+                $keyword                     = $param['keyword'];
             }
             if (!empty($param['type']) && is_numeric($param['type'])) {
                 $where['role_id'] = $type = $param['type'];

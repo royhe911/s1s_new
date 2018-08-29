@@ -62,6 +62,17 @@ class Controller
                 $this->beforeAction($method, $options);
             }
         }
+        $admin = Session::get('admin');
+        if (!empty($admin)) {
+            $a    = new AdminModel();
+            $user = $a->getModel(['id' => $admin['id']]);
+            if ($user['status'] !== 8) {
+                $this->error('该账号被禁用，请更换', url('/admin/login'));
+            }
+            if ($admin['pwd'] !== $user['pwd']) {
+                $this->error('登录超时，请重新登录', url('/admin/login'));
+            }
+        }
     }
 
     // 初始化
