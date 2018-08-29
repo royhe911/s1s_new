@@ -67,9 +67,11 @@ class Controller
             $a    = new AdminModel();
             $user = $a->getModel(['id' => $admin['id']]);
             if ($user['status'] !== 8) {
+                session('admin', null);
                 $this->error('该账号被禁用，请更换', url('/admin/login'));
             }
             if ($admin['pwd'] !== $user['pwd']) {
+                session('admin', null);
                 $this->error('登录超时，请重新登录', url('/admin/login'));
             }
         }
