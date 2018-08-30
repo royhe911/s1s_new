@@ -163,7 +163,7 @@ class Finance extends \think\Controller
     }
 
     /**
-     * 收到明细
+     * 收支明细
      * @Author 贺强
      * @date   2018-08-27
      * @param  BalanceModel $b BalanceModel 实例
