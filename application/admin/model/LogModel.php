@@ -1,6 +1,8 @@
 <?php
 namespace app\admin\model;
 
+use think\Session;
+
 class LogModel extends CommonModel
 {
     public function __construct()
@@ -39,7 +41,7 @@ class LogModel extends CommonModel
      * 写操作日志
      * @Author  贺强
      * @time    2018-08-29
-     * @param   array                    $data 要写入的数据
+     * @param   array      $data 要写入的数据
      */
     public function addLog($data)
     {

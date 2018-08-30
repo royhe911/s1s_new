@@ -47,6 +47,7 @@
                                 <th>充值截图</th>
                                 <th>充值金额</th>
                                 <th>交易单号</th>
+                                <th>不通过原因</th>
                                 <th>状态</th>
                             </tr>
                         </thead>
@@ -60,6 +61,7 @@
                                 <td><img src="/uploads/{$item.img}" class="jt"></td>
                                 <td>{$item.amount}</td>
                                 <td>{$item.orders}</td>
+                                <td>{$item.reason}</td>
                                 <td>{if($item.status == 0 && ($role_id == 6 || $role_id == 1))}<a href="javascript:;" data-action="auditor" data-id="{$item['id']}">审核</a>{else /}<span>{$item.status_txt}{/if}</span></td>
                             </tr>
                             {/foreach}
