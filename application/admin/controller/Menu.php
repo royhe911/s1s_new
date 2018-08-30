@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\LogModel;
 use app\admin\model\MenuModel;
 use app\admin\model\RoleAccessModel;
 use app\admin\model\RoleModel;
@@ -29,6 +30,8 @@ class Menu extends \think\Controller
                 $param['orders'] = 99;
             }
             $res = $m->add($param);
+            $l   = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_ADD_MENU, 'content' => '添加菜单，添加的菜单标识：' . $param['identity']]);
             if ($res) {
                 return ['status' => 0, 'info' => '添加成功'];
             }
@@ -48,8 +51,10 @@ class Menu extends \think\Controller
     public function del(MenuModel $m)
     {
         $admin = $this->is_login();
-        $id  = $this->request->post('id');
-        $res = $m->modifyField('is_delete', 1, ['id' => $id]);
+        $id    = $this->request->post('id');
+        $res   = $m->modifyField('is_delete', 1, ['id' => $id]);
+        $l     = new LogModel();
+        $l->addLog(['type' => LogModel::TYPE_DELETE_MENU, 'content' => '删除菜单']);
         if ($res) {
             return ['status' => 0, 'info' => '删除成功'];
         }
@@ -71,6 +76,8 @@ class Menu extends \think\Controller
                 return ['status' => 3, 'info' => '非法操作'];
             }
             $res = $m->modify($param, ['id' => $param['id']]);
+            $l   = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_EDIT_MENU, 'content' => '编辑菜单']);
             if ($res !== false) {
                 return ['status' => 0, 'info' => '修改成功'];
             } else {
@@ -93,7 +100,7 @@ class Menu extends \think\Controller
      */
     public function lists()
     {
-        $admin = $this->is_login();
+        $admin    = $this->is_login();
         $r        = new RoleModel();
         $m        = new MenuModel();
         $roles    = $r->getList();
@@ -115,10 +122,12 @@ class Menu extends \think\Controller
     public function power()
     {
         $admin = $this->is_login();
-        $ra = new RoleAccessModel();
+        $ra    = new RoleAccessModel();
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             $res   = $ra->updateRolePower($param);
+            $l     = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_POWER, 'content' => '分配菜单权限，分配的角色：' . $param['role_id'] . '，分配的权限：' . $param['menu_ids']]);
             if ($res === 1) {
                 return ['status' => 1, 'info' => '非法参数'];
             }

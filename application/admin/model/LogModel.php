@@ -23,6 +23,17 @@ class LogModel extends CommonModel
     const TYPE_APPLY_CASH               = 13; // 日志类型 - 申请提现
     const TYPE_APPLY_CASH_PASS          = 14; // 日志类型 - 申请提现审核通过
     const TYPE_APPLY_CASH_FAIL          = 15; // 日志类型 - 申请提现审核不通过
+    const TYPE_RECHARGE                 = 16; // 商家充值
+    const TYPE_RECHARGE_AUDITOR         = 17; // 充值审核
+    const TYPE_ADD_USER                 = 18; // 添加用户
+    const TYPE_DELETE_USER              = 19; // 删除用户
+    const TYPE_DISABLE_USER             = 20; // 禁用用户
+    const TYPE_ENABLE_USER              = 21; // 启用用户
+    const TYPE_EDIT_USER                = 22; // 修改用户
+    const TYPE_ADD_MENU                 = 23; // 添加菜单
+    const TYPE_DELETE_MENU              = 24; // 删除菜单
+    const TYPE_EDIT_MENU                = 25; // 编辑菜单
+    const TYPE_POWER                    = 26; // 菜单权限分配
 
     /**
      * 写操作日志

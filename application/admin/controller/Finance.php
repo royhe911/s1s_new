@@ -3,6 +3,7 @@ namespace app\admin\controller;
 
 use app\admin\model\AdminModel;
 use app\admin\model\BalanceModel;
+use app\admin\model\LogModel;
 use app\admin\model\RechargeModel;
 
 /**
@@ -42,6 +43,8 @@ class Finance extends \think\Controller
                 'addtime'  => time(),
             ];
             $res = $r->add($data);
+            $l   = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE, 'content' => '商家充值，充值金额：' . $amount]);
             if (!$res) {
                 return ['status' => 2, 'info' => '充值失败'];
             }
@@ -153,6 +156,8 @@ class Finance extends \think\Controller
                 }
                 return ['status' => $res, 'info' => $msg];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
             return ['status' => 0, 'info' => '审核成功'];
         }
     }

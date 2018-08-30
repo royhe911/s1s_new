@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\AdminModel;
+use app\admin\model\LogModel;
 use app\admin\model\MenuModel;
 use app\admin\model\RoleAccessModel;
 use think\Session;
@@ -146,6 +147,8 @@ class Index extends \think\Controller
             $param['addtime'] = time();
             $param['status']  = 8;
             $res              = $a->add($param);
+            $l                = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_ADD_USER, 'content' => '添加用户，添加的用户：'.$param['uid']]);
             if (!$res) {
                 return ['status' => 4, 'info' => '添加失败'];
             }
@@ -179,18 +182,23 @@ class Index extends \think\Controller
             $field = 'is_delete';
             $value = 1;
             $msg   = '删除';
+            $data  = ['type' => LogModel::TYPE_DELETE_USER, 'content' => '删除用户，被删除的用户ID：' . $ids];
         } elseif ($type === 'disable' || $type === 'disableAll') {
             $field = 'status';
             $value = 6;
             $msg   = '禁用';
+            $data  = ['type' => LogModel::TYPE_DISABLE_USER, 'content' => '禁用用户，被禁用的用户ID：' . $ids];
         } elseif ($type == 'enable' || $type == 'enableAll') {
             $field = 'status';
             $value = 8;
             $msg   = '启用';
+            $data  = ['type' => LogModel::TYPE_ENABLE_USER, 'content' => '启用用户，被启用的用户ID：' . $ids];
         } else {
             return ['status' => 2, 'info' => '非法操作'];
         }
         $res = $a->modifyField($field, $value, ['id' => ['in', $ids]]);
+        $l   = new LogModel();
+        $l->addLog($data);
         if ($res) {
             return ['status' => 0, 'info' => $msg . '成功'];
         } elseif ($res === false) {
@@ -237,6 +245,8 @@ class Index extends \think\Controller
             if (!$res) {
                 return ['status' => 4, 'info' => '修改失败'];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => TYPE_EDIT_USER, 'content' => '修改用户，被修改的用户ID：' . $id]);
             return ['status' => 0, 'info' => '修改成功'];
         } else {
             $id = $this->request->get('id');
