@@ -121,10 +121,12 @@ class Finance extends \think\Controller
         $admin  = $this->is_login();
         $param  = $this->request->post();
         $r      = new RechargeModel();
+        $l      = new LogModel();
         $status = intval($param['status']);
         if ($status === 1) {
             // 审核不通过
             $res = $r->modify(['reason' => $param['reason'], 'status' => $status], ['id' => $param['id']]);
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
             if ($res !== false) {
                 return ['status' => 0, 'info' => '审核成功'];
             } else {
@@ -156,7 +158,6 @@ class Finance extends \think\Controller
                 }
                 return ['status' => $res, 'info' => $msg];
             }
-            $l = new LogModel();
             $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
             return ['status' => 0, 'info' => '审核成功'];
         }
