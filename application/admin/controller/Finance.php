@@ -60,8 +60,21 @@ class Finance extends \think\Controller
      */
     public function rechargelog(RechargeModel $r)
     {
-        $admin   = $this->is_login();
-        $where   = [];
+        $admin = $this->is_login();
+        $where = [];
+        if ($admin['role_id'] === 3) {
+            // 若登录角色是商家，则只能看到他自己的充值记录
+            $where['uid'] = $admin['id'];
+        } elseif ($admin['role_id'] === 2 || $admin['role_id'] === 4 || $admin['role_id'] === 5) {
+            // 若登录角色是业务员或客服主管理或客服，则只能看到他名下的商家充值记录
+            $ids  = '0';
+            $a    = new AdminModel();
+            $sarr = $a->getList(['s_id' => $admin['id']], 'id');
+            foreach ($sarr as $sa) {
+                $ids .= ",{$sa['id']}";
+            }
+            $where['uid'] = ['in', $ids];
+        }
         $keyword = $this->request->post('keyword');
         if (!empty($keyword)) {
             $where['nickname'] = ['like', "%{$keyword}%"];
@@ -102,7 +115,7 @@ class Finance extends \think\Controller
      */
     public function auditor()
     {
-        $admin = $this->is_login();
+        $admin  = $this->is_login();
         $param  = $this->request->post();
         $r      = new RechargeModel();
         $status = intval($param['status']);

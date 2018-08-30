@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
     <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/paging/paging.css">
     <style type="text/css">
         .form-control{width: 220px;}
         .ttd{width: 250px;text-align: center;}
@@ -83,6 +84,11 @@
                         </tr>
                         {/foreach}
                         </tbody>
+                        <footer>
+                            <tr>
+                                <td colspan="100"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
+                            </tr>
+                        </footer>
                     </table>
                 </div>
             </div>
@@ -92,6 +98,7 @@
 </body>
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/paging/paging-min.js"></script>
 <script>
     $(function () {
         $('.gradeX').each(function(){

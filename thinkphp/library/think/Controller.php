@@ -109,10 +109,11 @@ class Controller
     /**
      * 获取用户角色
      */
-    protected function getRoles()
+    protected function getRoles($where = null)
     {
-        $r    = new RoleModel();
-        $list = $r->getList(['is_delete' => 0], 'id,`name`');
+        $where['is_delete'] = 0;
+        $r                  = new RoleModel();
+        $list               = $r->getList($where, 'id,`name`');
         return $list;
     }
 

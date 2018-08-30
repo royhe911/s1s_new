@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
     <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/paging/paging.css">
     <style type="text/css">
         .form-control{width: 220px;}
         .ttd{width: 250px;text-align: center;}
@@ -40,6 +41,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>商家/店铺</th>
                                 <th>充值方式</th>
                                 <th>充值时间</th>
                                 <th>充值截图</th>
@@ -52,6 +54,7 @@
                             {foreach $list as $item}
                             <tr>
                                 <td>{$item.id}</td>
+                                <td>{$item.nickname}</td>
                                 <td>{if($item.pay_mode == 1)}支付宝{else/}银行卡{/if}</td>
                                 <td>{$item.addtime}</td>
                                 <td><img src="/uploads/{$item.img}" class="jt"></td>
@@ -63,7 +66,7 @@
                         </tbody>
                         <footer>
                             <tr>
-                                <td colspan="7"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
+                                <td colspan="100"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
                             </tr>
                         </footer>
                     </table>
@@ -75,6 +78,7 @@
 </body>
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/paging/paging-min.js"></script>
 <script>
     $(function () {
         layer.config({extend: 'extend/layer.ext.js'});

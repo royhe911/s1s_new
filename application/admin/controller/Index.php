@@ -151,7 +151,7 @@ class Index extends \think\Controller
             }
             return ['status' => 0, 'info' => '添加成功'];
         } else {
-            $roles    = $this->getRoles();
+            $roles    = $this->getRoles(['id' => ['<>', 1]]);
             $salesman = $this->getSalesman();
             $time     = time();
             return $this->fetch('add', ['roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
@@ -208,16 +208,20 @@ class Index extends \think\Controller
      */
     public function edit(AdminModel $a)
     {
-        $admin = $this->is_login();
+        $admin   = $this->is_login();
+        $role_id = $admin['role_id'];
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             $id    = $admin['id'];
-            if ($admin['role_id'] === 1) {
+            if ($role_id === 1) {
                 $id = $param['id'];
             } elseif ($admin['uid'] !== $param['uid']) {
                 return ['status' => 1, 'info' => '非法操作，只能修改自己的账号'];
             }
             unset($param['uid']);
+            if ($role_id != 1) {
+                unset($param['role_id']);
+            }
             if (!empty($param['pwd'])) {
                 $salt          = get_random_str(); // 生成密码盐
                 $param['salt'] = $salt;
@@ -243,7 +247,11 @@ class Index extends \think\Controller
             if (empty($user)) {
                 $this->error('用户不存在');
             }
-            $roles    = $this->getRoles();
+            $role_w = null;
+            if ($role_id != 1) {
+                $role_w = ['id' => ['<>', 1]];
+            }
+            $roles    = $this->getRoles($role_w);
             $salesman = $this->getSalesman();
             $time     = time();
             return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
@@ -251,7 +259,7 @@ class Index extends \think\Controller
     }
 
     /**
-     * 管理员列表
+     * 用户列表
      * @Author 贺强
      * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
@@ -273,7 +281,9 @@ class Index extends \think\Controller
                 $where['role_id'] = $type = $param['type'];
             }
         }
-        $list = $a->getList($where);
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $a->getList($where, true, "$page,$pagesize", 'logintime desc');
         // print_r($list);exit;
         foreach ($list as &$item) {
             $item['status_txt'] = get_user_status($item['status']);
@@ -284,8 +294,10 @@ class Index extends \think\Controller
                 $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
             }
         }
+        $count = $a->getCount($where);
+        $pages = ceil($count / $pagesize);
         $roles = $this->getRoles();
-        return $this->fetch('list', ['list' => $list, 'roles' => $roles, 'keyword' => $keyword, 'type' => $type]);
+        return $this->fetch('list', ['list' => $list, 'roles' => $roles, 'keyword' => $keyword, 'type' => $type, 'pages' => $pages]);
     }
 
 }

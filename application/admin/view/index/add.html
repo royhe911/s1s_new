@@ -14,8 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
     <style type="text/css">
         .form-control{width: 200px;}
-        #s_group{display: none;}
-        #s_line{display: none;}
+        .sj{display: none;}
     </style>
 </head>
 <body class="gray-bg">
@@ -68,14 +67,14 @@
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
-                        <div class="form-group">
+                        <div class="form-group sj">
                             <label class="col-sm-2 control-label">昵称/商家名称</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nickname">
                             </div>
                         </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group" id="s_group">
+                        <div class="hr-line-dashed sj"></div>
+                        <div class="form-group sj">
                             <label class="col-sm-2 control-label">业务员</label>
                             <div class="col-sm-10">
                                 <select id="s_id" class="form-control">
@@ -86,7 +85,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="hr-line-dashed" id="s_line"></div>
+                        <div class="hr-line-dashed sj"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">头像</label>
                             <div class="col-sm-10">
@@ -125,11 +124,9 @@
         });
         $('#role_id').change(function(){
             if ($(this).val() == 3) {
-                $('#s_group').css('display', 'block');
-                $('#s_line').css('display', 'block')
+                $('.sj').css('display', 'block')
             } else {
-                $('#s_group').css('display', 'none');
-                $('#s_line').css('display', 'none')
+                $('.sj').css('display', 'none')
             }
         });
         $('input[data-action]').click(function(){
@@ -160,7 +157,7 @@
                     layer.msg('真实姓名不能为空', {icon: 5, time: 2000}, function(){realname.focus()});
                     return false
                 }
-                if (nickname.val() == '') {
+                if (role_id == 3 && nickname.val() == '') {
                     layer.msg('昵称/商家名称不能为空', {icon: 5, time: 2000}, function(){nickname.focus()});
                     return false
                 }
