@@ -124,10 +124,11 @@ class Menu extends \think\Controller
         $admin = $this->is_login();
         $ra    = new RoleAccessModel();
         if ($this->request->isAjax()) {
-            $param = $this->request->post();
-            $res   = $ra->updateRolePower($param);
-            $l     = new LogModel();
-            $l->addLog(['type' => LogModel::TYPE_POWER, 'content' => '分配菜单权限，分配的角色：' . $param['role_id'] . '，分配的权限：' . $param['menu_ids']]);
+            $param    = $this->request->post();
+            $res      = $ra->updateRolePower($param);
+            $l        = new LogModel();
+            $menu_ids = implode(',', $param['menu_ids']);
+            $l->addLog(['type' => LogModel::TYPE_POWER, 'content' => '分配菜单权限，分配的角色：' . $param['role_id'] . '，分配的权限：' . $menu_ids]);
             if ($res === 1) {
                 return ['status' => 1, 'info' => '非法参数'];
             }

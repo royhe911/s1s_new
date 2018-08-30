@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use app\admin\model\AdminModel;
 use app\admin\model\BalanceModel;
 use app\admin\model\LogModel;
+use app\admin\model\PutforwardModel;
 use app\admin\model\RechargeModel;
 
 /**
@@ -89,8 +90,9 @@ class Finance extends \think\Controller
             foreach ($list as &$item) {
                 if (!empty($item['addtime'])) {
                     $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
-                } else {
-                    $item['addtime'] = '';
+                }
+                if (!empty($item['auditor_time'])) {
+                    $item['auditor_time'] = date('Y-m-d H:i:s', $item['auditor_time']);
                 }
                 switch (intval($item['status'])) {
                     case 0:
@@ -125,7 +127,7 @@ class Finance extends \think\Controller
         $status = intval($param['status']);
         if ($status === 1) {
             // 审核不通过
-            $res = $r->modify(['reason' => $param['reason'], 'status' => $status], ['id' => $param['id']]);
+            $res = $r->modify(['reason' => $param['reason'], 'auditor_time' => time(), 'status' => $status], ['id' => $param['id']]);
             $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
             if ($res !== false) {
                 return ['status' => 0, 'info' => '审核成功'];
@@ -138,6 +140,65 @@ class Finance extends \think\Controller
             $data['status'] = 8;
             $b              = new BalanceModel();
             $res            = $b->balanceLog(2, $data);
+            if ($res !== true) {
+                switch ($res) {
+                    case 2:
+                        $msg = '用户不存在';
+                        break;
+                    case 3:
+                        $msg = '用户待审核';
+                        break;
+                    case 4:
+                        $msg = '用户审核未通过';
+                        break;
+                    case 5:
+                        $msg = '该用户已被禁用';
+                        break;
+                    case 6 || 7 || 8:
+                        $msg = '审核失败';
+                        break;
+                }
+                return ['status' => $res, 'info' => $msg];
+            }
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            return ['status' => 0, 'info' => '审核成功'];
+        }
+    }
+
+    /**
+     * 提现审核
+     * @Author 贺强
+     * @date   2018-08-30
+     */
+    public function auditor_f()
+    {
+        $admin  = $this->is_login();
+        $param  = $this->request->post();
+        $p      = new PutforwardModel();
+        $l      = new LogModel();
+        $status = intval($param['status']);
+        if ($status === 1) {
+            // 审核不通过
+            $res = $p->auditor_not_pass($param);
+            if ($res !== true) {
+                switch ($res) {
+                    case 1:
+                        $msg = '用户不存在';
+                        break;
+                    case 2 || 3:
+                        $msg = '审核失败';
+                        break;
+                }
+                return ['status' => $res, 'info' => $msg];
+            }
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            return ['status' => 0, 'info' => '审核成功'];
+        } elseif ($status === 8) {
+            // 审核通过
+            $data           = $p->getModel(['id' => $param['id']]);
+            $data['status'] = 8;
+            $b              = new BalanceModel();
+            $res            = $b->balanceLog(1, $data);
             if ($res !== true) {
                 switch ($res) {
                     case 2:
@@ -247,9 +308,95 @@ class Finance extends \think\Controller
      * @Author 贺强
      * @date   2018-08-27
      */
-    public function putforward()
+    public function putforward(PutforwardModel $p)
     {
         $admin = $this->is_login();
+        if ($this->request->isAjax()) {
+            $param             = $this->request->post();
+            $param['uid']      = $admin['id'];
+            $param['nickname'] = $admin['nickname'];
+            $res               = $p->putforward($param);
+            if ($res !== true) {
+                switch ($res) {
+                    case 1:
+                        $msg = '提现金额不足';
+                        break;
+                    case 2:
+                        $msg = '银行卡号或银行卡姓名不能为空';
+                        break;
+                    case 3:
+                        $msg = '银行卡号或银行卡姓名有误';
+                        break;
+                    case 4 || 5:
+                        $msg = '提现失败';
+                        break;
+                }
+                return ['status' => $res, 'info' => $msg];
+            }
+            return ['status' => 0, 'info' => '提现申请成功，请等等审核'];
+        } else {
+            return $this->fetch('putforward');
+        }
+    }
+
+    /**
+     * 提现记录
+     * @Author 贺强
+     * @date   2018-08-30
+     */
+    public function putforwardlog(PutforwardModel $p)
+    {
+        $admin   = $this->is_login();
+        $where   = [];
+        $balance = 0;
+        $a       = new AdminModel();
+        if ($admin['role_id'] === 3) {
+            // 若登录角色是商家，则只能看到他自己的提现记录
+            $where['uid']  = $admin['id'];
+            $balance_model = $a->getModel(['id' => $admin['id']], 'balance');
+            if (!empty($balance_model)) {
+                $balance = $balance_model['balance'];
+            }
+        } elseif ($admin['role_id'] === 2 || $admin['role_id'] === 4 || $admin['role_id'] === 5) {
+            // 若登录角色是业务员或客服主管理或客服，则只能看到他名下的商家提现记录
+            $ids  = '0';
+            $sarr = $a->getList(['s_id' => $admin['id']], 'id');
+            foreach ($sarr as $sa) {
+                $ids .= ",{$sa['id']}";
+            }
+            $where['uid'] = ['in', $ids];
+        }
+        $keyword = $this->request->post('keyword');
+        if (!empty($keyword)) {
+            $where['nickname'] = ['like', "%{$keyword}%"];
+        }
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $p->getList($where, true, "$page,$pagesize", "`status`,addtime desc");
+        if ($list) {
+            foreach ($list as &$item) {
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                } else {
+                    $item['addtime'] = '';
+                }
+                switch (intval($item['status'])) {
+                    case 0:
+                        $item['status_txt'] = '待审核';
+                        break;
+                    case 1:
+                        $item['status_txt'] = '审核不通过';
+                        break;
+                    default:
+                        $item['status_txt'] = '已审核';
+                        break;
+                }
+            }
+        }
+        // print_r($list);exit;
+        $count = $p->getCount($where);
+        $pages = ceil($count / $pagesize);
+        return $this->fetch('putforwardlog', ['list' => $list, 'pages' => $pages, 'role_id' => $admin['role_id'], 'balance' => $balance]);
     }
 
     /**

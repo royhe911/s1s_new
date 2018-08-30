@@ -25,7 +25,7 @@ class BalanceModel extends CommonModel
         }
         $a = new AdminModel();
         // 查询用户是否存在
-        $merchant = $a->getModel(['id' => $data['uid']], '`status`,balance');
+        $merchant = $a->getModel(['id' => $data['uid']]);
         if (empty($merchant)) {
             return 2;
         }
@@ -43,12 +43,18 @@ class BalanceModel extends CommonModel
         }
         // 开启事务操作用户余额
         Db::startTrans();
-        $amount      = $data['amount'];
-        $uid         = $data['uid'];
-        $after_money = $merchant['balance'] + $amount;
-        $log         = [
+        $amount = $data['amount'];
+        $uid    = $data['uid'];
+        if ($type === 2) {
+            $before_money = $merchant['balance'];
+            $after_money  = $merchant['balance'] + $amount;
+        } elseif ($type === 1) {
+            $before_money = $merchant['balance'] + $merchant['putforward'];
+            $after_money  = $merchant['balance'];
+        }
+        $log = [
             'uid'          => $uid,
-            'before_money' => $merchant['balance'],
+            'before_money' => $before_money,
             'after_money'  => $after_money,
             'type'         => $type,
             'change_money' => $amount,
@@ -57,7 +63,7 @@ class BalanceModel extends CommonModel
         if ($type === 2) {
             // 如果是充值，修改充值状态
             $r   = new RechargeModel();
-            $res = $r->modifyField('status', $data['status'], ['id' => $data['id']]);
+            $res = $r->modifyField(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
             if (!$res) {
                 Db::rollback();
                 return 8;
@@ -66,10 +72,17 @@ class BalanceModel extends CommonModel
             // 如果是发布任务，修改任务状态
             $p  = new ProductModel();
             $pr = new ProductArrModel();
+        } elseif ($type === 1) {
+            $p   = new PutforwardModel();
+            $res = $p->modifyField(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
+            if (!$res) {
+                Db::rollback();
+                return 8;
+            }
         }
         // 修改对应用户余额
         $res = $a->modifyField('balance', $after_money, ['id' => $uid]);
-        if (!$res) {
+        if ($res === false) {
             Db::rollback();
             return 6;
         }
