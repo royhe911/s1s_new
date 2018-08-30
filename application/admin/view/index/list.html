@@ -51,7 +51,7 @@
                         <thead>
                         <tr>
                             <th><input type="checkbox" id="selAll"></th>
-                            <th>ID</th>
+                            <th>序号</th>
                             <th>真实姓名</th>
                             <th>昵称</th>
                             <th>头像</th>
@@ -66,10 +66,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach $list as $item}
+                        {foreach $list as $k=>$item}
                         <tr class="gradeX">
                             <td>{if($item.uid!='admin')}<input type="checkbox" class="check" value="{$item.id}">{/if}</td>
-                            <td>{$item.id}</td>
+                            <td>{$k+1}</td>
                             <td>{$item.realname}</td>
                             <td>{$item.nickname}</td>
                             <td><img src="/uploads/{$item.avatar}" class="avatar" onerror="this.style.display='none'"></td>
