@@ -13,6 +13,8 @@ class Index extends \think\Controller
 {
     /**
      * 首页
+     * @Author 贺强
+     * @date   2018-08-22
      */
     public function index()
     {
@@ -31,8 +33,10 @@ class Index extends \think\Controller
 
     /**
      * 根据用户角色 ID 获取该用户的权限
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  integer $role_id 用户角色 ID
-     * @return json             返回该用户拥有权限菜单
+     * @return json    返回该用户拥有权限菜单
      */
     private function get_menus($role_id = 0)
     {
@@ -65,6 +69,8 @@ class Index extends \think\Controller
 
     /**
      * 后台欢迎页
+     * @Author 贺强
+     * @date   2018-08-22
      */
     public function index_v1()
     {
@@ -74,6 +80,8 @@ class Index extends \think\Controller
 
     /**
      * 登录页
+     * @Author 贺强
+     * @date   2018-08-22
      */
     public function login()
     {
@@ -86,6 +94,8 @@ class Index extends \think\Controller
 
     /**
      * 登录操作
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
      * @return bool          返回登录是否成功
      */
@@ -114,8 +124,9 @@ class Index extends \think\Controller
 
     /**
      * 添加用户账号
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
-     * @return bool          返回添加是否成功
      */
     public function add(AdminModel $a)
     {
@@ -149,6 +160,8 @@ class Index extends \think\Controller
 
     /**
      * 删除用户
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
      */
     public function operation(AdminModel $a)
@@ -189,6 +202,8 @@ class Index extends \think\Controller
 
     /**
      * 修改用户
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
      */
     public function edit(AdminModel $a)
@@ -237,8 +252,9 @@ class Index extends \think\Controller
 
     /**
      * 管理员列表
+     * @Author 贺强
+     * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
-     * @return page          返回列表页
      */
     public function lists(AdminModel $a)
     {

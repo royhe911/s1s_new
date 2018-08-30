@@ -9,7 +9,9 @@ class Menu extends \think\Controller
 {
     /**
      * 添加菜单
-     * @param MenuModel $m MenuModel 实例
+     * @Author 贺强
+     * @date   2018-08-23
+     * @param  MenuModel  $m MenuModel 实例
      */
     public function add(MenuModel $m)
     {
@@ -39,7 +41,9 @@ class Menu extends \think\Controller
 
     /**
      * 删除菜单
-     * @param  MenuModel $m MenuModel 实例
+     * @Author 贺强
+     * @date   2018-08-23
+     * @param  MenuModel  $m MenuModel 实例
      */
     public function del(MenuModel $m)
     {
@@ -54,7 +58,9 @@ class Menu extends \think\Controller
 
     /**
      * 编辑菜单
-     * @param  MenuModel $m MenuModel 实例
+     * @Author 贺强
+     * @date   2018-08-23
+     * @param  MenuModel  $m MenuModel 实例
      */
     public function edit(MenuModel $m)
     {
@@ -82,7 +88,8 @@ class Menu extends \think\Controller
 
     /**
      * 菜单列表
-     * @return array        返回菜单数组
+     * @Author 贺强
+     * @date   2018-08-23
      */
     public function lists()
     {
@@ -102,6 +109,8 @@ class Menu extends \think\Controller
 
     /**
      * 菜单权限管理
+     * @Author 贺强
+     * @date   2018-08-23
      */
     public function power()
     {

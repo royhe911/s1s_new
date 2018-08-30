@@ -8,6 +8,9 @@ class Upload extends \think\Controller
 {
     /**
      * 图片上传
+     * @Author 贺强
+     * @date   2018-08-20
+     * @return string     返回上传后的图片 json 数据
      */
     public function upload_img()
     {

@@ -12,6 +12,9 @@ class Finance extends \think\Controller
 {
     /**
      * 商家充值
+     * @Author 贺强
+     * @date   2018-08-27
+     * @param  RechargeModel $r RechargeModel 实例
      */
     public function recharge(RechargeModel $r)
     {
@@ -51,6 +54,9 @@ class Finance extends \think\Controller
 
     /**
      * 充值记录
+     * @Author 贺强
+     * @date   2018-08-27
+     * @param  RechargeModel $r RechargeModel 实例
      */
     public function rechargelog(RechargeModel $r)
     {
@@ -90,7 +96,9 @@ class Finance extends \think\Controller
     }
 
     /**
-     * 审核充值
+     * 充值审核
+     * @Author 贺强
+     * @date   2018-08-27
      */
     public function auditor()
     {
@@ -137,7 +145,10 @@ class Finance extends \think\Controller
     }
 
     /**
-     * 收支明细
+     * 收到明细
+     * @Author 贺强
+     * @date   2018-08-27
+     * @param  BalanceModel $b BalanceModel 实例
      */
     public function detail(BalanceModel $b)
     {
@@ -214,6 +225,8 @@ class Finance extends \think\Controller
 
     /**
      * 商家提现
+     * @Author 贺强
+     * @date   2018-08-27
      */
     public function putforward()
     {
@@ -222,6 +235,8 @@ class Finance extends \think\Controller
 
     /**
      * 站点补款
+     * @Author 贺强
+     * @date   2018-08-27
      */
     public function supplement()
     {
