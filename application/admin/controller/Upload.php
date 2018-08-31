@@ -14,6 +14,10 @@ class Upload extends \think\Controller
      */
     public function upload_img()
     {
+        $timestamp = $this->request->post('timestamp');
+        if (time() - $timestamp > 600) {
+            return ['status' => 4, 'info' => '上传超时，请刷新页面重试'];
+        }
         $root_path  = ROOT_PATH . 'public/uploads/';
         $file_types = ['jpg', 'jpeg', 'gif', 'png'];
         $file       = $_FILES['Filedata'];
@@ -22,7 +26,7 @@ class Upload extends \think\Controller
         }
         $file         = (array) $file;
         $fileinfo     = pathinfo($file['name']);
-        $verify_token = md5(config('UPLOAD_SALT') . $this->request->post('timestamp'));
+        $verify_token = md5(config('UPLOAD_SALT') . $timestamp);
         if ($verify_token !== $this->request->post('token')) {
             return json(['status' => 2, 'info' => '非法操作']);
         }
