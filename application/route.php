@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 return [
-    '/'                      => 'Index/index',
+    '/'                      => 'admin/Index/index',
     '/login'                 => 'admin/Index/login', // 后台登录页
     '/admin'                 => 'admin/Index/index', // 后台首页
     '/admin/doLogin'         => 'admin/Index/do_login', // 后台登录操作
@@ -30,6 +30,6 @@ return [
     '/finance/detail'        => 'admin/Finance/detail', // 收支明细
     '/finance/putforwardlog' => 'admin/Finance/putforwardlog', // 提现记录
     '/finance/putforward'    => 'admin/Finance/putforward', // 提现
-    '/finance/auditor_f'     => 'admin/Finance/auditor_f', // 提现审核
+    '/finance/auditorf'     => 'admin/Finance/auditorf', // 提现审核
     '/upload'                => 'admin/Upload/upload_img', // 上传文件
 ];

@@ -20,7 +20,8 @@ class Finance extends \think\Controller
      */
     public function recharge(RechargeModel $r)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             if ($admin['role_id'] !== 3) {
                 return ['status' => 9, 'info' => '只有商家可以充值'];
@@ -64,7 +65,8 @@ class Finance extends \think\Controller
      */
     public function rechargelog(RechargeModel $r)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where = [];
         if ($admin['role_id'] === 3) {
             // 若登录角色是商家，则只能看到他自己的充值记录
@@ -120,7 +122,8 @@ class Finance extends \think\Controller
      */
     public function auditor()
     {
-        $admin  = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param  = $this->request->post();
         $r      = new RechargeModel();
         $l      = new LogModel();
@@ -170,15 +173,21 @@ class Finance extends \think\Controller
      * @Author 贺强
      * @date   2018-08-30
      */
-    public function auditor_f()
+    public function auditorf()
     {
-        $admin  = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param  = $this->request->post();
         $p      = new PutforwardModel();
         $l      = new LogModel();
         $status = intval($param['status']);
         if ($status === 1) {
             // 审核不通过
+            if ($admin['role_id'] == 2) {
+                $param['status'] = 1;
+            } elseif ($admin['role_id'] == 6) {
+                $param['status'] = 4;
+            }
             $res = $p->auditor_not_pass($param);
             if ($res !== true) {
                 switch ($res) {
@@ -195,6 +204,9 @@ class Finance extends \think\Controller
             return ['status' => 0, 'info' => '审核成功'];
         } elseif ($status === 8) {
             // 审核通过
+            if ($admin['role_id'] == 2) {
+                $param['status'] = 6;
+            }
             $data           = $p->getModel(['id' => $param['id']]);
             $data['status'] = 8;
             $b              = new BalanceModel();
@@ -232,8 +244,8 @@ class Finance extends \think\Controller
      */
     public function detail(BalanceModel $b)
     {
-        // 判断用户是否登录
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where = "is_delete=0";
         $a     = new AdminModel();
         if ($admin['role_id'] === 2 || $admin['role_id'] === 4 || $admin['role_id'] === 5) {
@@ -262,7 +274,8 @@ class Finance extends \think\Controller
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $b->getList($where, true, "$page,$pagesize", 'addtime desc');
         if ($list) {
-            $business = $this->getBusiness();
+            $business = $this->getUsers(['role_id' => 3]);
+            $business = array_column($business, 'nickname', 'id');
             foreach ($list as &$item) {
                 if (!empty($business[$item['uid']])) {
                     $item['business'] = $business[$item['uid']];
@@ -310,7 +323,8 @@ class Finance extends \think\Controller
      */
     public function putforward(PutforwardModel $p)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             $param             = $this->request->post();
             $param['uid']      = $admin['id'];
@@ -346,7 +360,8 @@ class Finance extends \think\Controller
      */
     public function putforwardlog(PutforwardModel $p)
     {
-        $admin   = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where   = [];
         $balance = 0;
         $a       = new AdminModel();
@@ -357,10 +372,18 @@ class Finance extends \think\Controller
             if (!empty($balance_model)) {
                 $balance = $balance_model['balance'];
             }
-        } elseif ($admin['role_id'] === 2 || $admin['role_id'] === 4 || $admin['role_id'] === 5) {
-            // 若登录角色是业务员或客服主管理或客服，则只能看到他名下的商家提现记录
+        } elseif ($admin['role_id'] === 2) {
+            // 若登录角色是业务员，则只能看到他名下的商家提现记录
             $ids  = '0';
             $sarr = $a->getList(['s_id' => $admin['id']], 'id');
+            foreach ($sarr as $sa) {
+                $ids .= ",{$sa['id']}";
+            }
+            $where['uid'] = ['in', $ids];
+        } elseif ($admin['role_id'] === 4 || $admin['role_id'] === 5) {
+            // 若登录角色是客服主管理或客服，则只能看到他名下的商家提现记录
+            $ids  = '0';
+            $sarr = $a->getList(['k_id' => $admin['id']], 'id');
             foreach ($sarr as $sa) {
                 $ids .= ",{$sa['id']}";
             }
@@ -380,16 +403,43 @@ class Finance extends \think\Controller
                 } else {
                     $item['addtime'] = '';
                 }
-                switch (intval($item['status'])) {
-                    case 0:
-                        $item['status_txt'] = '待审核';
-                        break;
-                    case 1:
-                        $item['status_txt'] = '审核不通过';
-                        break;
-                    default:
-                        $item['status_txt'] = '已审核';
-                        break;
+                // 商家提现状态逻辑
+                if ($item['status'] === 8) {
+                    $item['status_txt'] = '已审核';
+                } else {
+                    if ($admin['role_id'] === 3) {
+                        // 如果登录角色是商家或客服主管或客服则只能看到提现状态
+                        if ($item['status'] === 0 || $item['status'] === 6) {
+                            $item['status_txt'] = '待审核';
+                        } elseif ($item['status'] === 1 || $item['status'] === 4) {
+                            $item['status_txt'] = '审核不通过';
+                        }
+                    } elseif ($admin['role_id'] === 2) {
+                        // 如果登录角色是业务员，状态为 0 时可审核
+                        if ($item['status'] === 1) {
+                            $item['status_txt'] = '审核不通过';
+                        } elseif ($item['status'] === 4) {
+                            $item['status_txt'] = '财务审核不通过';
+                        } elseif ($item['status'] === 6) {
+                            $item['status_txt'] = '待财务审核';
+                        }
+                    } elseif ($admin['role_id'] === 6) {
+                        // 如果登录角色是财务，状态为 6 时可审核
+                        if ($item['status'] === 0) {
+                            $item['status_txt'] = '待业务审核';
+                        } elseif ($item['status'] === 1) {
+                            $item['status_txt'] = '业务审核不通过';
+                        } elseif ($item['status'] === 4) {
+                            $item['status_txt'] = '审核不通过';
+                        }
+                    } elseif ($admin['role_id'] === 1) {
+                        // 如果登录角色是超管，状态为 0 或 6 时可审核
+                        if ($item['status'] === 1) {
+                            $item['status_txt'] = '业务审核不通过';
+                        } elseif ($item['status'] === 4) {
+                            $item['status_txt'] = '财务审核不通过';
+                        }
+                    }
                 }
             }
         }
@@ -406,6 +456,7 @@ class Finance extends \think\Controller
      */
     public function supplement()
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
     }
 }

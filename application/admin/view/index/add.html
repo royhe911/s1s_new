@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
     <style type="text/css">
         .form-control{width: 200px;}
-        .sj{display: none;}
+        .sj,.kf{display: none;}
     </style>
 </head>
 <body class="gray-bg">
@@ -64,6 +64,18 @@
                             <label class="col-sm-2 control-label">真实姓名</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="realname">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed kf"></div>
+                        <div class="form-group kf">
+                            <label class="col-sm-2 control-label">主管</label>
+                            <div class="col-sm-10">
+                                <select id="k_id" class="form-control">
+                                    <option value="0">…请选择业务员…</option>
+                                    {foreach $executive as $e}
+                                    <option value="{$e['id']}">{$e['nickname']}</option>
+                                    {/foreach}
+                                </select>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -128,11 +140,16 @@
             } else {
                 $('.sj').css('display', 'none')
             }
+            if ($(this).val() == 5) {
+                $('.kf').css('display', 'block')
+            } else {
+                $('.kf').css('display', 'none')
+            }
         });
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), s_id = $('#s_id').val(), avatar = $('#avatar').val();
+                var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), k_id = $('#k_id').val(), s_id = $('#s_id').val(), avatar = $('#avatar').val();
                 if (uid.val() == '') {
                     layer.msg('登录账号不能为空', {icon: 5, time: 2000}, function(){uid.focus()});
                     return false
@@ -157,13 +174,23 @@
                     layer.msg('真实姓名不能为空', {icon: 5, time: 2000}, function(){realname.focus()});
                     return false
                 }
-                if (role_id == 3 && nickname.val() == '') {
-                    layer.msg('昵称/商家名称不能为空', {icon: 5, time: 2000}, function(){nickname.focus()});
+                if (role_id == 5 && k_id <= 0) {
+                    layer.msg('请选择客服主管', {icon: 5, time: 2000});
                     return false
+                } else {
+                    k_id = 0;
                 }
-                if (role_id == 3 && s_id <= 0) {
-                    layer.msg('请选择业务员', {icon: 5, time: 2000});
-                    return false
+                if (role_id == 3) {
+                    if (nickname.val() == '') {
+                        layer.msg('昵称/商家名称不能为空', {icon: 5, time: 2000}, function(){nickname.focus()});
+                        return false
+                    }
+                    if (s_id <= 0) {
+                        layer.msg('请选择业务员', {icon: 5, time: 2000});
+                        return false
+                    }
+                } else {
+                    s_id = 0;
                 }
                 if (avatar == '') {
                     layer.msg('请上传头像', {icon: 5, time: 2000});

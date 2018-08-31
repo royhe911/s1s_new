@@ -14,6 +14,7 @@ namespace think;
 \think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
 use app\admin\model\AdminModel;
+use app\admin\model\MenuModel;
 use app\admin\model\RoleModel;
 use think\Exception;
 use think\exception\ValidateException;
@@ -96,13 +97,46 @@ class Controller
     }
 
     /**
-     * 获取商家列表
+     * 判断登录用户是否有权限
+     * @Author 贺强
+     * @date   2018-08-31
+     * @param  string     $identity 操作/访问的方法
      */
-    protected function getBusiness()
+    public function is_valid($identity = '')
     {
-        $a    = new AdminModel();
-        $list = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,nickname');
-        $list = array_column($list, 'nickname', 'id');
+        $admin = $this->is_login();
+        if (empty($identity)) {
+            $this->error('您无权访问或操作');
+        }
+        $m    = new MenuModel();
+        $menu = $m->getModel(['identity' => $identity], 'id');
+        if (empty($menu)) {
+            $this->error('您无权访问或操作');
+        }
+        if (empty($admin)) {
+            $this->error('您无权访问或操作');
+        }
+        if ($admin['role_id'] === 1) {
+            return $admin;
+        }
+        if (!in_array($menu['id'], $admin['roles'])) {
+            $this->error('您无权访问或操作');
+        }
+        return $admin;
+    }
+
+    /**
+     * 根据条件获取用户
+     * @Author 贺强
+     * @date   2018-08-31
+     * @param  array      $where 条件
+     * @param  string     $field 要获取的字段
+     */
+    protected function getUsers($where = [], $field = 'id,nickname')
+    {
+        $where['is_delete'] = 0;
+        $a                  = new AdminModel();
+        $list               = $a->getList($where, $field);
         return $list;
     }
 
@@ -114,16 +148,6 @@ class Controller
         $where['is_delete'] = 0;
         $r                  = new RoleModel();
         $list               = $r->getList($where, 'id,`name`');
-        return $list;
-    }
-
-    /**
-     * 获取业务员
-     */
-    protected function getSalesman()
-    {
-        $a    = new AdminModel();
-        $list = $a->getList(['is_delete' => 0, 'role_id' => 2], 'id,`nickname`');
         return $list;
     }
 

@@ -118,6 +118,13 @@ class Index extends \think\Controller
             return ['status' => 3, 'info' => '账号审核不通过或被禁用，请联系管理员'];
         }
         $a->modifyField('logintime', time(), ['id' => $admin['id']]);
+        $r        = new RoleAccessModel();
+        $role_arr = $r->getList(['role_id' => $admin['role_id']], 'menu_id');
+        $roles    = [];
+        foreach ($role_arr as $role) {
+            $roles[] = $role['menu_id'];
+        }
+        $admin['roles'] = $roles;
         session('admin', $admin);
         // return $this->fetch('login', ['admin'=>$admin, 'status'=>'success']);
         return ['status' => 0, 'info' => '登录成功'];
@@ -131,7 +138,8 @@ class Index extends \think\Controller
      */
     public function add(AdminModel $a)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             if (empty($param['uid']) || empty($param['pwd']) || empty($param['role_id'])) {
@@ -141,6 +149,14 @@ class Index extends \think\Controller
             if (!empty($has)) {
                 return ['status' => 2, 'info' => '该账号已存在'];
             }
+            // 如果添加的用户不是商家，则不需要业务员
+            if ($param['role_id'] != 3) {
+                unset($param['s_id']);
+            }
+            // 如果添加的用户不是客服，则不需要客服主管
+            if ($param['role_id'] != 5) {
+                unset($param['k_id']);
+            }
             $salt             = get_random_str(); // 生成密码盐
             $param['salt']    = $salt;
             $param['pwd']     = get_password($param['pwd'], $salt);
@@ -148,16 +164,22 @@ class Index extends \think\Controller
             $param['status']  = 8;
             $res              = $a->add($param);
             $l                = new LogModel();
-            $l->addLog(['type' => LogModel::TYPE_ADD_USER, 'content' => '添加用户，添加的用户：'.$param['uid']]);
+            $l->addLog(['type' => LogModel::TYPE_ADD_USER, 'content' => '添加用户，添加的用户：' . $param['uid']]);
             if (!$res) {
                 return ['status' => 4, 'info' => '添加失败'];
             }
             return ['status' => 0, 'info' => '添加成功'];
         } else {
-            $roles    = $this->getRoles(['id' => ['<>', 1]]);
-            $salesman = $this->getSalesman();
-            $time     = time();
-            return $this->fetch('add', ['roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
+            $where_role = ['id' => ['<>', 1]];
+            // 根据登录用户角色判断该用户能添加哪些角色的用户
+            if ($admin['role_id'] !== 1) {
+                $where_role = ['id' => $admin['role_id']];
+            }
+            $roles     = $this->getRoles($where);
+            $salesman  = $this->getUsers(['role_id' => 2]);
+            $executive = $this->getUsers(['role_id' => 4]);
+            $time      = time();
+            return $this->fetch('add', ['roles' => $roles, 'salesman' => $salesman, 'executive' => $executive, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
     }
 
@@ -169,7 +191,8 @@ class Index extends \think\Controller
      */
     public function operation(AdminModel $a)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $ids   = $this->request->post('ids');
         if (empty($ids) || !preg_match('/^0[\,\d+]+$/', $ids)) {
             return ['status' => 3, 'info' => '非法参数'];
@@ -262,7 +285,7 @@ class Index extends \think\Controller
                 $role_w = ['id' => ['<>', 1]];
             }
             $roles    = $this->getRoles($role_w);
-            $salesman = $this->getSalesman();
+            $salesman = $this->getUsers(['role_id' => 2]);
             $time     = time();
             return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
