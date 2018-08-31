@@ -82,6 +82,7 @@ class Menu extends \think\Controller
             $l   = new LogModel();
             $l->addLog(['type' => LogModel::TYPE_EDIT_MENU, 'content' => '编辑菜单']);
             if ($res !== false) {
+                $m->modifyField('orders', $param['orders'], ['pid' => $param['id']]);
                 return ['status' => 0, 'info' => '修改成功'];
             } else {
                 return ['status' => 4, 'info' => '修改失败'];
@@ -104,7 +105,7 @@ class Menu extends \think\Controller
     public function lists()
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin    = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $r        = new RoleModel();
         $m        = new MenuModel();
         $roles    = $r->getList();
@@ -148,7 +149,7 @@ class Menu extends \think\Controller
             $m       = new MenuModel();
             $roles   = $r->getList(['id' => ['<>', 1]]);
             $role_id = $this->request->get('role_id');
-            $list    = $m->getList(['is_delete' => 0]);
+            $list    = $m->getList(['is_delete' => 0], true, null, 'orders');
             $has     = $ra->getList(['role_id' => $role_id], 'menu_id');
             $has     = array_column($has, 'menu_id');
             return $this->fetch('power', ['list' => $list, 'roles' => $roles, 'has' => $has, 'role_id' => $role_id]);

@@ -38,6 +38,7 @@
                                 <th style="width: 100px;">序号</th>
                                 <th>标识</th>
                                 <th>名称</th>
+                                <th>排序</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
@@ -47,6 +48,7 @@
                                 <td>{$key+1}</td>
                                 <td{if($item.pid!=0)} style="text-indent: 30px;"{/if}>{$item.identity}</td>
                                 <td{if($item.pid!=0)} style="text-indent: 30px;"{/if}>{$item.name}</td>
+                                <td>{$item.orders}</td>
                                 <td><input type="checkbox" id="menu{$item['id']}" class="menu_id" value="{$item['id']}" data-pid="{$item['pid']}" {if(in_array($item['id'], $has))} checked="checked"{/if}><label for="menu{$item['id']}">拥有</label></td>
                             </tr>
                             {/foreach}
