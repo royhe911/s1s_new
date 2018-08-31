@@ -17,7 +17,7 @@ class RoleAccessModel extends CommonModel
      */
     public function updateRolePower($param = [])
     {
-        if (empty($param['role_id']) || empty($param['menu_ids']) || !is_array($param['menu_ids'])) {
+        if (empty($param['role_id'])) {
             return 1;
         }
         Db::startTrans();
@@ -25,12 +25,14 @@ class RoleAccessModel extends CommonModel
             $role_id = $param['role_id'];
             $this->delByWhere(['role_id' => $role_id]);
             $data = [];
-            foreach ($param['menu_ids'] as $menu_id) {
-                $data[] = ['role_id' => $role_id, 'menu_id' => $menu_id];
+            if (!empty($param['menu_ids'])) {
+                foreach ($param['menu_ids'] as $menu_id) {
+                    $data[] = ['role_id' => $role_id, 'menu_id' => $menu_id];
+                }
+                $this->addArr($data);
             }
-            $this->addArr($data);
             Db::commit();
-            return 10;
+            return true;
         } catch (\Exception $e) {
             Db::rollback();
             return 2;

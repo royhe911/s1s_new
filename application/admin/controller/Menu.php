@@ -133,17 +133,23 @@ class Menu extends \think\Controller
             $param    = $this->request->post();
             $res      = $ra->updateRolePower($param);
             $l        = new LogModel();
-            $menu_ids = implode(',', $param['menu_ids']);
+            $menu_ids = '';
+            if (!empty($param['menu_ids'])) {
+                $menu_ids = implode(',', $param['menu_ids']);
+            }
             $l->addLog(['type' => LogModel::TYPE_POWER, 'content' => '分配菜单权限，分配的角色：' . $param['role_id'] . '，分配的权限：' . $menu_ids]);
-            if ($res === 1) {
-                return ['status' => 1, 'info' => '非法参数'];
+            if ($res !== true) {
+                switch ($res) {
+                    case 1:
+                        $msg = '非法参数';
+                        break;
+                    case 2:
+                        $msg = '系统异常';
+                        break;
+                }
+                return ['status' => $res, 'info' => $msg];
             }
-            if ($res === 2) {
-                return ['status' => 2, 'info' => '系统异常'];
-            }
-            if ($res === 10) {
-                return ['status' => 0, 'info' => '修改成功'];
-            }
+            return ['status' => 0, 'info' => '修改成功'];
         } else {
             $r       = new RoleModel();
             $m       = new MenuModel();
