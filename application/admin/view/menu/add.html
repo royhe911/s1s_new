@@ -95,7 +95,7 @@
     $(function(){
         $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
         $('#cancel').click(function(){
-            location.href = '/menu/list';
+            location.href = '/menu/lists';
         });
         $('#save').click(function(){
             var pid = $('#pid'), identity = $('#identity'), name = $('#name'), url = $('#url'), orders = $('#orders').val(), is_hide = $('input[name="is_hide"]:checked').val();
@@ -128,7 +128,7 @@
                         }, function(){
                             location.reload();
                         }, function(){
-                            location.href = '/menu/list'
+                            location.href = '/menu/lists'
                         });
                     }else{
                         layer.msg(data.info, {icon: 5, time: 2000});

@@ -10,16 +10,16 @@
 // +----------------------------------------------------------------------
 
 return [
-    '/'                      => 'admin/Index/index',
-    '/login'                 => 'admin/Index/login', // 后台登录页
-    '/admin'                 => 'admin/Index/index', // 后台首页
-    '/admin/doLogin'         => 'admin/Index/do_login', // 后台登录操作
-    '/admin/index_v1'        => 'admin/Index/index_v1', // 后台首页欢迎页
-    '/admin/list'            => 'admin/Index/lists', // 后台管理员列表
-    '/admin/add'             => 'admin/Index/add', // 后台添加管理员
-    '/admin/edit'            => 'admin/Index/edit', // 后台添加管理员
-    '/admin/operation'       => 'admin/Index/operation', // 后台操作管理员
-    '/menu/list'             => 'admin/Menu/lists', // 菜单列表
+    '/'                      => 'admin/Admin/index',
+    '/login'                 => 'admin/Admin/login', // 后台登录页
+    '/admin'                 => 'admin/Admin/index', // 后台首页
+    '/admin/doLogin'         => 'admin/Admin/do_login', // 后台登录操作
+    '/admin/index_v1'        => 'admin/Admin/index_v1', // 后台首页欢迎页
+    '/admin/lists'           => 'admin/Admin/lists', // 后台管理员列表
+    '/admin/add'             => 'admin/Admin/add', // 后台添加管理员
+    '/admin/edit'            => 'admin/Admin/edit', // 后台添加管理员
+    '/admin/operation'       => 'admin/Admin/operation', // 后台操作管理员
+    '/menu/lists'            => 'admin/Menu/lists', // 菜单列表
     '/menu/edit'             => 'admin/Menu/edit', // 编辑菜单
     '/menu/add'              => 'admin/Menu/add', // 添加菜单
     '/menu/del'              => 'admin/Menu/del', // 删除菜单
@@ -30,6 +30,6 @@ return [
     '/finance/detail'        => 'admin/Finance/detail', // 收支明细
     '/finance/putforwardlog' => 'admin/Finance/putforwardlog', // 提现记录
     '/finance/putforward'    => 'admin/Finance/putforward', // 提现
-    '/finance/auditorf'     => 'admin/Finance/auditorf', // 提现审核
+    '/finance/auditorf'      => 'admin/Finance/auditorf', // 提现审核
     '/upload'                => 'admin/Upload/upload_img', // 上传文件
 ];

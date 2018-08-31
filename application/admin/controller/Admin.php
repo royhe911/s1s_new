@@ -10,7 +10,7 @@ use think\Session;
 /**
  * 后台管理
  */
-class Index extends \think\Controller
+class Admin extends \think\Controller
 {
     /**
      * 首页
@@ -175,7 +175,7 @@ class Index extends \think\Controller
             if ($admin['role_id'] !== 1) {
                 $where_role = ['id' => $admin['role_id']];
             }
-            $roles     = $this->getRoles($where);
+            $roles     = $this->getRoles($where_role);
             $salesman  = $this->getUsers(['role_id' => 2]);
             $executive = $this->getUsers(['role_id' => 4]);
             $time      = time();
@@ -184,7 +184,7 @@ class Index extends \think\Controller
     }
 
     /**
-     * 删除用户
+     * 设置用户
      * @Author 贺强
      * @date   2018-08-22
      * @param  AdminModel $a AdminModel 实例
@@ -239,7 +239,8 @@ class Index extends \think\Controller
      */
     public function edit(AdminModel $a)
     {
-        $admin   = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $role_id = $admin['role_id'];
         if ($this->request->isAjax()) {
             $param = $this->request->post();
@@ -299,7 +300,8 @@ class Index extends \think\Controller
      */
     public function lists(AdminModel $a)
     {
-        $admin   = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where   = ['is_delete' => 0];
         $keyword = '';
         $type    = 0;

@@ -123,7 +123,7 @@ class Finance extends \think\Controller
     public function auditor()
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin  = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param  = $this->request->post();
         $r      = new RechargeModel();
         $l      = new LogModel();
@@ -131,7 +131,7 @@ class Finance extends \think\Controller
         if ($status === 1) {
             // 审核不通过
             $res = $r->modify(['reason' => $param['reason'], 'auditor_time' => time(), 'status' => $status], ['id' => $param['id']]);
-            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核不通过，审核的充值ID：' . $param['id']]);
             if ($res !== false) {
                 return ['status' => 0, 'info' => '审核成功'];
             } else {
@@ -163,7 +163,7 @@ class Finance extends \think\Controller
                 }
                 return ['status' => $res, 'info' => $msg];
             }
-            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核通过，审核的充值ID：' . $param['id']]);
             return ['status' => 0, 'info' => '审核成功'];
         }
     }
@@ -176,7 +176,7 @@ class Finance extends \think\Controller
     public function auditorf()
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin  = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param  = $this->request->post();
         $p      = new PutforwardModel();
         $l      = new LogModel();
@@ -200,38 +200,42 @@ class Finance extends \think\Controller
                 }
                 return ['status' => $res, 'info' => $msg];
             }
-            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '提现审核不通过，审核的充值ID：' . $param['id']]);
             return ['status' => 0, 'info' => '审核成功'];
         } elseif ($status === 8) {
             // 审核通过
             if ($admin['role_id'] == 2) {
-                $param['status'] = 6;
-            }
-            $data           = $p->getModel(['id' => $param['id']]);
-            $data['status'] = 8;
-            $b              = new BalanceModel();
-            $res            = $b->balanceLog(1, $data);
-            if ($res !== true) {
-                switch ($res) {
-                    case 2:
-                        $msg = '用户不存在';
-                        break;
-                    case 3:
-                        $msg = '用户待审核';
-                        break;
-                    case 4:
-                        $msg = '用户审核未通过';
-                        break;
-                    case 5:
-                        $msg = '该用户已被禁用';
-                        break;
-                    case 6 || 7 || 8:
-                        $msg = '审核失败';
-                        break;
+                $res = $p->modifyField('status', 6, ['id' => $param['id']]);
+                if (!$res) {
+                    return ['status' => 1, 'info' => '审核失败'];
                 }
-                return ['status' => $res, 'info' => $msg];
+            } elseif ($admin['role_id'] == 6 || $admin['role_id'] == 1) {
+                $data           = $p->getModel(['id' => $param['id']]);
+                $data['status'] = 8;
+                $b              = new BalanceModel();
+                $res            = $b->balanceLog(1, $data);
+                if ($res !== true) {
+                    switch ($res) {
+                        case 2:
+                            $msg = '用户不存在';
+                            break;
+                        case 3:
+                            $msg = '用户待审核';
+                            break;
+                        case 4:
+                            $msg = '用户审核未通过';
+                            break;
+                        case 5:
+                            $msg = '该用户已被禁用';
+                            break;
+                        case 6 || 7 || 8:
+                            $msg = '审核失败';
+                            break;
+                    }
+                    return ['status' => $res, 'info' => $msg];
+                }
             }
-            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '充值审核，审核的充值ID：' . $param['id']]);
+            $l->addLog(['type' => LogModel::TYPE_RECHARGE_AUDITOR, 'content' => '提现审核通过，审核的充值ID：' . $param['id']]);
             return ['status' => 0, 'info' => '审核成功'];
         }
     }
@@ -361,7 +365,7 @@ class Finance extends \think\Controller
     public function putforwardlog(PutforwardModel $p)
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin   = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where   = [];
         $balance = 0;
         $a       = new AdminModel();

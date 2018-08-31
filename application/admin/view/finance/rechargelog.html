@@ -30,7 +30,7 @@
                         <tr>
                             <td class="ttd"><input type="text" name="keyword" placeholder="商家名称" class="input-sm form-control"></td>
                             <td class="ttb"><input type="submit" class="btn btn-sm btn-primary" value="搜索"></td>
-                            <td class="ttb"><input class="btn btn-primary" type="button" data-action="recharge" value="充值"></td>
+                            {if($role_id==3)}<td class="ttb"><input class="btn btn-primary" type="button" data-action="recharge" value="充值"></td>{/if}
                             <td>&nbsp;</td>
                         </tr>
                     </table>

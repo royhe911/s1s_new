@@ -41,8 +41,6 @@ class BalanceModel extends CommonModel
                 return 5;
                 break;
         }
-        // 开启事务操作用户余额
-        Db::startTrans();
         $amount = $data['amount'];
         $uid    = $data['uid'];
         if ($type === 2) {
@@ -60,10 +58,12 @@ class BalanceModel extends CommonModel
             'change_money' => $amount,
             'addtime'      => time(),
         ];
+        // 开启事务操作用户余额
+        Db::startTrans();
         if ($type === 2) {
             // 如果是充值，修改充值状态
             $r   = new RechargeModel();
-            $res = $r->modifyField(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
+            $res = $r->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
             if (!$res) {
                 Db::rollback();
                 return 8;
@@ -74,7 +74,7 @@ class BalanceModel extends CommonModel
             $pr = new ProductArrModel();
         } elseif ($type === 1) {
             $p   = new PutforwardModel();
-            $res = $p->modifyField(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
+            $res = $p->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
             if (!$res) {
                 Db::rollback();
                 return 8;

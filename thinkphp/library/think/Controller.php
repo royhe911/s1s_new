@@ -113,9 +113,6 @@ class Controller
         if (empty($menu)) {
             $this->error('您无权访问或操作');
         }
-        if (empty($admin)) {
-            $this->error('您无权访问或操作');
-        }
         if ($admin['role_id'] === 1) {
             return $admin;
         }

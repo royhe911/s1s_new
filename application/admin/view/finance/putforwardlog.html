@@ -98,7 +98,7 @@
                 }, function(){
                     $.ajax({
                         type: 'post', cache: false, dataType: 'json',
-                        url: '/finance/auditor_f',
+                        url: '/finance/auditorf',
                         data: {'id': $id, 'status': 8},
                         success: function(data){
                             if (data.status == 0) {
@@ -117,7 +117,7 @@
                         layer.close(i);
                         $.ajax({
                             type: 'post', cache: false, dataType: 'json',
-                            url: '/finance/auditor_f',
+                            url: '/finance/auditorf',
                             data: {'id': $id, 'reason': v, 'status': 1},
                             success: function(data){
                                 if (data.status == 0) {

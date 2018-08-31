@@ -16,7 +16,8 @@ class Menu extends \think\Controller
      */
     public function add(MenuModel $m)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             if (empty($param['identity']) || empty($param['name'])) {
@@ -50,7 +51,8 @@ class Menu extends \think\Controller
      */
     public function del(MenuModel $m)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $id    = $this->request->post('id');
         $res   = $m->modifyField('is_delete', 1, ['id' => $id]);
         $l     = new LogModel();
@@ -69,7 +71,8 @@ class Menu extends \think\Controller
      */
     public function edit(MenuModel $m)
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             $param = $this->request->post();
             if (empty($param['id']) || empty($param['identity']) || empty($param['name'])) {
@@ -100,7 +103,8 @@ class Menu extends \think\Controller
      */
     public function lists()
     {
-        $admin    = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $r        = new RoleModel();
         $m        = new MenuModel();
         $roles    = $r->getList();
@@ -121,7 +125,8 @@ class Menu extends \think\Controller
      */
     public function power()
     {
-        $admin = $this->is_login();
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $ra    = new RoleAccessModel();
         if ($this->request->isAjax()) {
             $param    = $this->request->post();
