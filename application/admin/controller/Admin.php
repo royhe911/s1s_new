@@ -106,7 +106,7 @@ class Admin extends \think\Controller
         if (empty($param['uid']) || empty($param['pwd'])) {
             return ['status' => 3, 'info' => '用户名或密码不能为空'];
         }
-        $admin = $a->getModel(['uid' => $param['uid']]);
+        $admin = $a->getModel(['uid|mobile' => $param['uid']]);
         if (empty($admin)) {
             return ['status' => 2, 'info' => '用户名或密码错误'];
         }

@@ -46,4 +46,14 @@ class Upload extends \think\Controller
             return json(['status' => 0, 'info' => '上传成功', 'path' => $upload_dir . $filename]);
         }
     }
+
+    /**
+     * 导出文件
+     * @Author 贺强
+     * @date   2018-09-03
+     */
+    public function export()
+    {
+        # code...
+    }
 }
