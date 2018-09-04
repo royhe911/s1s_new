@@ -462,5 +462,7 @@ class Finance extends \think\Controller
     {
         // 判断是否有权限访问或操作
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $param = $this->request->post();
+        $where = [];
     }
 }

@@ -51,9 +51,34 @@ class Upload extends \think\Controller
      * 导出文件
      * @Author 贺强
      * @date   2018-09-03
+     * @param  string     $filename 要导出的文件名
+     * @param  array      $titleArr excel 表头
+     * @param  array      $data     要导出的数据
      */
-    public function export()
+    public function export($filename, $titleArr = [], $data = [])
     {
-        # code...
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', 0);
+        ob_end_clean();
+        ob_start();
+        header("Content-Type: text/csv");
+        header("Content-Disposition:filename=" . $filename);
+        $fp = fopen('php://output', 'w');
+        fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF)); //转码 防止乱码(比如微信昵称(乱七八糟的))
+        fputcsv($fp, $titleArr);
+        $index = 0;
+        foreach ($data as $item) {
+            if ($index == 1000) {
+                $index = 0;
+                ob_flush();
+                flush();
+            }
+            $index++;
+            fputcsv($fp, $item);
+        }
+
+        ob_flush();
+        flush();
+        ob_end_clean();
     }
 }
