@@ -316,6 +316,7 @@ class Admin extends \think\Controller
                 $where['role_id'] = $type = $param['type'];
             }
         }
+        // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $a->getList($where, true, "$page,$pagesize", 'logintime desc');

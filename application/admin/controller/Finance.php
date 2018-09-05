@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use app\admin\model\AdminModel;
 use app\admin\model\BalanceModel;
 use app\admin\model\LogModel;
+use app\admin\model\PaylogModel;
 use app\admin\model\PutforwardModel;
 use app\admin\model\RechargeModel;
 
@@ -85,6 +86,7 @@ class Finance extends \think\Controller
         if (!empty($keyword)) {
             $where['nickname'] = ['like', "%{$keyword}%"];
         }
+        // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $r->getList($where, true, "$page,$pagesize", "`status`,addtime desc");
@@ -274,6 +276,7 @@ class Finance extends \think\Controller
             }
             $where .= " and uid in ($k_ids)";
         }
+        // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $b->getList($where, true, "$page,$pagesize", 'addtime desc');
@@ -397,6 +400,7 @@ class Finance extends \think\Controller
         if (!empty($keyword)) {
             $where['nickname'] = ['like', "%{$keyword}%"];
         }
+        // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $p->getList($where, true, "$page,$pagesize", "`status`,addtime desc");
@@ -456,13 +460,77 @@ class Finance extends \think\Controller
     /**
      * 站点补款
      * @Author 贺强
-     * @date   2018-08-27
+     * @date   2018-09-05
+     * @param  PaylogModel $p PaylogModel 实例
      */
-    public function supplement()
+    public function supplement(PaylogModel $p)
     {
         // 判断是否有权限访问或操作
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param = $this->request->post();
-        $where = [];
+        $where = ['type' => 1];
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $p->getList($where, 'id,addtime,before_money,after_money,money,remark,type', "$page,$pagesize", 'addtime desc');
+        $pages    = 0;
+        if ($list) {
+            $count = $p->getCount($where);
+            $pages = ceil($count / $pages);
+            foreach ($list as &$item) {
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                }
+            }
+        }
+        return $this->fetch('supplement', ['list' => $list, 'pages' => $pages]);
+    }
+
+    /**
+     * 佣金审核
+     * @Author 贺强
+     * @date   2018-09-05
+     * @param  PaylogModel $p PaylogModel 实例
+     */
+    public function commision(PaylogModel $p)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $param = $this->request->post();
+        $where = ['type' => 2];
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $p->getList($where, 'id,addtime,c_id,money,balance,status,type', "$page,$pagesize", 'status,addtime desc');
+        $pages    = 0;
+        if ($list) {
+            $count  = $p->getCount($where);
+            $pages  = ceil($count / $pagesize);
+            $a      = new AdminModel();
+            $kf_arr = $a->getList(['role_id' => 4], 'id,realname');
+            $kf_arr = array_column($kf_arr, 'realname', 'id');
+            foreach ($list as &$item) {
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                }
+                if (!empty($kf_arr[$item['uid']])) {
+                    $item['kf_name'] = $kf_arr[$item['uid']];
+                } else {
+                    $item['kf_name'] = '';
+                }
+                switch ($item['status']) {
+                    case 0:
+                        $item['status_txt'] = '未审核';
+                        break;
+                    case 1:
+                        $item['status_txt'] = '审核不通过';
+                        break;
+                    case 8:
+                        $item['status_txt'] = '已审核';
+                        break;
+                }
+            }
+        }
+        return $this->fetch('commision', ['list' => $list, 'pages' => $pages]);
     }
 }

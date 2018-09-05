@@ -36,4 +36,5 @@ return [
     '/shop/add'              => 'admin/Shop/add', // 添加店铺
     '/shop/edit'             => 'admin/Shop/edit', // 修改店铺
     '/shop/auditor'          => 'admin/Shop/auditor', // 店铺审核
+    '/shokey/index'          => 'admin/Shokey/index', // 试客列表
 ];

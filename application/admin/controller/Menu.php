@@ -110,6 +110,7 @@ class Menu extends \think\Controller
         $m        = new MenuModel();
         $roles    = $r->getList();
         $where    = ['is_delete' => 0];
+        // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $m->getList($where, true, "$page,$pagesize", 'orders');

@@ -144,13 +144,14 @@ class Shop extends \think\Controller
             }
             $where['uid'] = ['in', $ids];
         }
-        $page     = $this->request->get('page', 1);
-        $pagesize = $this->request->get('pagesize', config('PAGESIZE'));
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
         $list     = $s->getList($where, true, "$page,$pagesize");
         $pages    = 0;
         if ($list) {
             $a      = new AdminModel();
-            $sj_arr = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,realname');
+            $sj_arr = $a->getList(['role_id' => 3], 'id,realname');
             $sj_arr = array_column($sj_arr, 'realname', 'id');
             $count  = $s->getCount($where);
             foreach ($list as &$item) {
