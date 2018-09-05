@@ -32,6 +32,8 @@ return [
     '/finance/putforwardlog' => 'admin/Finance/putforwardlog', // 提现记录
     '/finance/putforward'    => 'admin/Finance/putforward', // 提现
     '/finance/auditorf'      => 'admin/Finance/auditorf', // 提现审核
+    '/finance/commision'     => 'admin/Finance/commision', // 佣金审核
+    '/finance/auditorp'      => 'admin/Finance/auditorp', // 审核佣金申请
     '/shop/index'            => 'admin/Shop/index', // 店铺列表
     '/shop/add'              => 'admin/Shop/add', // 添加店铺
     '/shop/edit'             => 'admin/Shop/edit', // 修改店铺

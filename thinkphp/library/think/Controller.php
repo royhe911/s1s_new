@@ -105,6 +105,9 @@ class Controller
     public function is_valid($identity = '')
     {
         $admin = $this->is_login();
+        if ($admin['role_id'] === 1) {
+            return $admin;
+        }
         if (empty($identity)) {
             $this->error('您无权访问或操作');
         }
@@ -112,9 +115,6 @@ class Controller
         $menu = $m->getModel(['identity' => $identity], 'id');
         if (empty($menu)) {
             $this->error('您无权访问或操作');
-        }
-        if ($admin['role_id'] === 1) {
-            return $admin;
         }
         if (!in_array($menu['id'], $admin['roles'])) {
             $this->error('您无权访问或操作');

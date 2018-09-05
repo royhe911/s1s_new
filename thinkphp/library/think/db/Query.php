@@ -961,7 +961,9 @@ class Query
         if (is_null($listRows) && strpos($page, ',')) {
             list($page, $listRows) = explode(',', $page);
         }
-        $this->options['page'] = [intval($page), intval($listRows)];
+        if (!empty($page)) {
+            $this->options['page'] = [intval($page), intval($listRows)];
+        }
         return $this;
     }
 

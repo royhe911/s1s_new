@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\AdminModel;
 use app\admin\model\ShopModel;
 
 /**

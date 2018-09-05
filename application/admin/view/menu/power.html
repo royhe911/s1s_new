@@ -25,7 +25,7 @@
                     <!-- <input type="button" class="btn btn-sm btn-primary" value="添加" onclick="location.href='/menu/add'"> -->
                     <input type="button" class="btn btn-sm btn-primary" value="保存修改" id="save">
                     <select id="roles" class="form-control">
-                        <option value="0">…请选择角色…</option>
+                        <option value="">…请选择角色…</option>
                         {foreach $roles as $role}
                         <option value="{$role.id}"{if($role.id == $role_id)} selected="selected"{/if}>{$role.name}</option>
                         {/foreach}
@@ -87,29 +87,29 @@
             }
         });
         $('#save').click(function(){
-            if ($('#roles').val() != 0) {
-                $role_id = $('#roles').val();
-                $menu_ids = [];
-                $('.menu_id').each(function(){
-                    if ($(this).is(':checked')) {
-                        $menu_ids.push($(this).val());
-                    }
-                });
-                $.ajax({
-                    type: 'post', cache: false, dataType: 'json',
-                    url: '/menu/power',
-                    data: {'role_id': $role_id, 'menu_ids': $menu_ids},
-                    success: function(data){
-                        if (data.status == 0) {
-                            layer.msg(data.info, {icon: 6, time: 1000});
-                        }else{
-                            layer.msg(data.info, {icon: 5, time: 1000});
-                        }
-                    }
-                });
-            }else{
-                layer.msg('请选择角色', {icon: 5, time: 1000});
+            if ($('#roles').val() == '') {
+                layer.msg('请选择角色', {icon: 5, time: 2000});
+                return false
             }
+            $role_id = $('#roles').val();
+            $menu_ids = [];
+            $('.menu_id').each(function(){
+                if ($(this).is(':checked')) {
+                    $menu_ids.push($(this).val());
+                }
+            });
+            $.ajax({
+                type: 'post', cache: false, dataType: 'json',
+                url: '/menu/power',
+                data: {'role_id': $role_id, 'menu_ids': $menu_ids},
+                success: function(data){
+                    if (data.status == 0) {
+                        layer.msg(data.info, {icon: 6, time: 1000});
+                    }else{
+                        layer.msg(data.info, {icon: 5, time: 1000});
+                    }
+                }
+            });
         });
     });
 </script>

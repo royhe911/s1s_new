@@ -501,7 +501,7 @@ class Finance extends \think\Controller
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
-        $list     = $p->getList($where, 'id,addtime,c_id,money,balance,status,type', "$page,$pagesize", 'status,addtime desc');
+        $list     = $p->getList($where, 'id,addtime,uid,money,balance,status,type', "$page,$pagesize", 'status,addtime desc');
         $pages    = 0;
         if ($list) {
             $count  = $p->getCount($where);
@@ -531,6 +531,50 @@ class Finance extends \think\Controller
                 }
             }
         }
-        return $this->fetch('commision', ['list' => $list, 'pages' => $pages]);
+        return $this->fetch('commision', ['list' => $list, 'pages' => $pages, 'admin' => $admin]);
+    }
+
+    /**
+     * 审核佣金申请
+     * @Author 贺强
+     * @date   2018-09-05
+     * @param  PaylogModel $p PaylogModel 实例
+     */
+    public function auditorp(PaylogModel $p)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        if ($this->request->isAjax()) {
+            $id     = $this->request->post('id');
+            $status = $this->request->post('status');
+            $reason = $this->request->post('reason', '');
+            if (empty($id) || empty($status)) {
+                return ['status' => 2, 'info' => '非法参数'];
+            }
+            if ($status == 8) {
+                // 调用 model 层方法使用事务确保金额一致性
+                $res = $p->auditor($id, $status);
+                if ($res !== true) {
+                    switch ($res) {
+                        case 1:
+                            $msg = '申请不存在';
+                            break;
+                        case 2 || 3 || 4:
+                            $msg = '更新失败';
+                            break;
+                    }
+                    return ['status' => $res, 'info' => $msg];
+                }
+            } else {
+                $res = $p->modifyField(['status' => $status, 'reason' => $reason], ['id' => $id]);
+                if (!$res) {
+                    return ['status' => 5, 'info' => '审核失败'];
+                }
+                return ['status' => 0, 'info' => '审核成功'];
+            }
+            return ['status' => 0, 'info' => '审核成功'];
+        } else {
+            return ['status' => 6, 'info' => '非法操作'];
+        }
     }
 }

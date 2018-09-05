@@ -27,13 +27,13 @@
                     <form action="/shokey/index" method="post">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tr>
-                            <td class="ttd"><input type="text" name="name" placeholder="试客名" class="input-sm form-control" value=""></td>
-                            <td class="ttd"><input type="text" name="starttime" placeholder="起始时间" class="input-sm form-control" value=""></td>
-                            <td class="ttd"><input type="text" name="endtime" placeholder="结束时间" class="input-sm form-control" value=""></td>
+                            <td class="ttd"><input type="text" name="name" placeholder="客服名" class="input-sm form-control" value=""></td>
+                            <td class="ttd"><input type="text" name="start" id="start" placeholder="起始时间" class="form-control layer-date" value=""></td>
+                            <td class="ttd"><input type="text" name="end" id="end" placeholder="结束时间" class="form-control layer-date" value=""></td>
                             <td class="ttd"><input type="text" name="wangwang" placeholder="旺旺号" class="input-sm form-control" value=""></td>
                             <td class="ttd">
                                 <select name="status" class="form-control">
-                                    <option>…状态…</option>
+                                    <option value="">…状态…</option>
                                     <option value="0">未审核</option>
                                     <option value="1">已审核</option>
                                 </select>
@@ -49,15 +49,11 @@
                         <thead>
                         <tr>
                             <th>序号</th>
-                            <th>姓名</th>
-                            <th>手机号</th>
-                            <th>微信号</th>
-                            <th>旺旺号</th>
-                            <th>年龄</th>
-                            <th>性别</th>
-                            <th>省/市</th>
+                            <th>充值时间</th>
+                            <th>客服名称</th>
+                            <th>申请金额</th>
+                            <th>申请人余额</th>
                             <th>状态</th>
-                            <th>上笔订单完成时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -65,16 +61,12 @@
                         {foreach $list as $k=>$item}
                         <tr class="gradeX">
                             <td>{$k+1}</td>
-                            <td>{$item.name}</td>
-                            <td>{$item.mobile}</td>
-                            <td>{$item.wx}</td>
-                            <td>{$item.wangwang}</td>
-                            <td>{$item.age}</td>
-                            <td>{$item.sex_txt}</td>
-                            <td>{$item.province}/{$item.city}</td>
+                            <td>{$item.addtime}</td>
+                            <td>{$item.kf_name}</td>
+                            <td>{$item.money}</td>
+                            <td>{$item.balance}</td>
                             <td>{$item.status_txt}</td>
-                            <td>{$item.last_order_time}</td>
-                            <td>{if($item.status==0&&($admin.role_id==1||$admin.role_id==2))}<a href="javascript:;" data-action="auditor" data-id="{$item.id}">审核</a>{elseif($item.status==8&&$admin.role_id==3)}<a href="#?id={$item.id}">发布任务</a> | <a href="/shop/edit?id={$item.id}">编辑</a>{/if}</td>
+                            <td>{if($item.status==0&&($admin.role_id==1||$admin.role_id==6))}<a href="javascript:;" data-action="auditorp" data-id="{$item.id}" data-uid="{$item.uid}">审核</a>{/if}</td>
                         </tr>
                         {/foreach}
                         </tbody>
@@ -92,33 +84,60 @@
 </body>
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="http://www.zi-han.net/theme/hplus/js/plugins/layer/laydate/laydate.js"></script>
 <script type="text/javascript" src="/static/paging/paging-min.js"></script>
 <script>
     $(function () {
+        var start = {
+            elem: "#start",
+            format: "YYYY-MM-DD",
+            max: "2099-06-16 23:59:59",
+            choose: function (datas) {
+                end.min = datas;
+                end.start = datas
+            }
+        };
+        var end = {
+            elem: "#end",
+            format: "YYYY-MM-DD",
+            max: "2099-06-16 23:59:59",
+            choose: function (datas) {
+                start.max = datas
+            }
+        };
+        laydate(start);
+        laydate(end);
+        layer.config({extend: 'extend/layer.ext.js'});
         $('a[data-action]').click(function(){
             var $action = $(this).data('action'), $id = $(this).data('id');
-            if($action == 'auditor'){
-                layer.confirm('店铺审核', {
+            if($action == 'auditorp'){
+                layer.confirm('佣金审核', {
                     btn: ['通过', '不通过', '取消'],
                     shade: false,
                     closeBtn: 0
                 }, function(){
-                    auditor($id, 8)
+                    auditorp($id, 8)
                 }, function(){
-                    auditor($id, 4)
+                    layer.prompt({
+                        formType: 2,
+                        title: '请输入驳回原因'
+                    }, function(v, i, e){
+                        layer.close(i);
+                        auditorp($id, 1, v)
+                    })
                 })
             }
         });
-        function auditor($id, $status) {
+        function auditorp($id, $status, $v) {
             var $msg = '确实审核通过吗？';
-            if ($status == 4) {
+            if ($status == 1) {
                 $msg = '确实审核不通过吗？';
             }
             layer.confirm($msg, {icon: 3}, function(){
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
-                    url: '/shop/auditor',
-                    data:{'id': $id, 'status': $status},
+                    url: '/finance/auditorp',
+                    data: {'id': $id, 'status': $status, 'reason': $v},
                     success: function(data){
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 1, time: 1000}, function(){

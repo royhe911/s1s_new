@@ -73,6 +73,7 @@ class BalanceModel extends CommonModel
             $p  = new ProductModel();
             $pr = new ProductArrModel();
         } elseif ($type === 1) {
+            // 如果是提现，修改提现状态
             $p   = new PutforwardModel();
             $res = $p->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
             if (!$res) {
