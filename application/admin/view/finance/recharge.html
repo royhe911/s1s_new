@@ -100,19 +100,19 @@
                 var a = $('#amount'), p = $('input[name="paymode"]:checked').val(), o = $('#orders'), i = $('#img');
                 var reg = /^(\d+)(\.\d{1,2})?$/;
                 if (a.val() == '' || !reg.test(a.val())) {
-                    layer.msg('金额输入错误', {icon: 3}, function(){a.focus()});
+                    layer.msg('金额输入错误', {icon: 3, time: 1000}, function(){a.focus()});
                     return false
                 }
                 if (!p) {
-                    layer.msg('请选择充值方式', {icon: 3});
+                    layer.msg('请选择充值方式', {icon: 3, time: 1000});
                     return false
                 }
                 if (o.val() == '') {
-                    layer.msg('请填写交易单号', {icon: 3}, function(){o.focus()});
+                    layer.msg('请填写交易单号', {icon: 3, time: 1000}, function(){o.focus()});
                     return false
                 }
                 if (i.val() == '') {
-                    layer.msg('请上传充值截图', {icon: 3});
+                    layer.msg('请上传充值截图', {icon: 3, time: 1000});
                     return false
                 }
                 $.ajax({
@@ -121,12 +121,12 @@
                     data: {'amount': a.val(), 'paymode': p, 'orders': o.val(), 'img': i.val()},
                     success: function(data){
                         if (data.status == 0) {
-                            layer.msg(data.info, {icon: 6, time: 2000}, function(){
+                            layer.msg(data.info, {icon: 6, time: 1000}, function(){
                                 parent.location.reload();
                                 parent.layer.closeAll();
                             })
                         } else {
-                            layer.msg(data.info, {icon: 5, time: 3000})
+                            layer.msg(data.info, {icon: 5, time: 1000})
                         }
                     }
                 })

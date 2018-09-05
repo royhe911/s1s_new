@@ -156,7 +156,7 @@
                     data:{'ids': $ids, 'type': $type},
                     success: function(data){
                         if (data.status == 0) {
-                            layer.msg(data.info, {icon: 1, time: 2000}, function(){
+                            layer.msg(data.info, {icon: 1, time: 1000}, function(){
                                 location.reload();
                             });
                         }else{

@@ -49,7 +49,7 @@
                         </tbody>
                         <footer>
                             <tr>
-                                <td colspan="6"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
+                                <td colspan="100"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
                             </tr>
                         </footer>
                     </table>
@@ -74,11 +74,11 @@
                         data: {'id': $id},
                         success: function(data){
                             if (data.status == 0) {
-                                layer.msg(data.info, {icon: 6, time: 2000}, function(){
+                                layer.msg(data.info, {icon: 6, time: 1000}, function(){
                                     location.href = '/menu/list';
                                 });
                             }else{
-                                layer.msg(data.info, {icon: 5, time: 2000});
+                                layer.msg(data.info, {icon: 5, time: 1000});
                             }
                         }
                     });

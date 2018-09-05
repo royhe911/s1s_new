@@ -173,23 +173,23 @@
             if ($action == 'save') {
                 var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), s_id = $('#s_id').val(), avatar = $('#avatar').val();
                 if (pwd1.val() != '' && pwd1.val() != pwd2.val()) {
-                    layer.msg('再次输入的密码不一致', {icon: 5, time: 2000}, function(){pwd1.focus()});
+                    layer.msg('再次输入的密码不一致', {icon: 5, time: 1000}, function(){pwd1.focus()});
                     return false
                 }
                 if (role_id <= 0) {
-                    layer.msg('请选择用户角色', {icon: 5, time: 2000});
+                    layer.msg('请选择用户角色', {icon: 5, time: 1000});
                     return false
                 }
                 if (realname.val() == '') {
-                    layer.msg('真实姓名不能为空', {icon: 5, time: 2000}, function(){realname.focus()});
+                    layer.msg('真实姓名不能为空', {icon: 5, time: 1000}, function(){realname.focus()});
                     return false
                 }
                 if (nickname.val() == '') {
-                    layer.msg('昵称/商家名称不能为空', {icon: 5, time: 2000}, function(){nickname.focus()});
+                    layer.msg('昵称/商家名称不能为空', {icon: 5, time: 1000}, function(){nickname.focus()});
                     return false
                 }
                 if (role_id == 3 && s_id <= 0) {
-                    layer.msg('请选择业务员', {icon: 5, time: 2000});
+                    layer.msg('请选择业务员', {icon: 5, time: 1000});
                     return false
                 }
                 $.ajax({
@@ -200,7 +200,7 @@
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 6});
                         }else{
-                            layer.msg(data.info, {icon: 5, time: 2000});
+                            layer.msg(data.info, {icon: 5, time: 1000});
                         }
                     }
                 });

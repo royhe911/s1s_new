@@ -101,14 +101,14 @@
                     data: {'role_id': $role_id, 'menu_ids': $menu_ids},
                     success: function(data){
                         if (data.status == 0) {
-                            layer.msg(data.info, {icon: 6, time: 2000});
+                            layer.msg(data.info, {icon: 6, time: 1000});
                         }else{
-                            layer.msg(data.info, {icon: 5});
+                            layer.msg(data.info, {icon: 5, time: 1000});
                         }
                     }
                 });
             }else{
-                layer.msg('请选择角色', {icon: 5});
+                layer.msg('请选择角色', {icon: 5, time: 1000});
             }
         });
     });

@@ -100,13 +100,13 @@
         $('#save').click(function(){
             var pid = $('#pid'), identity = $('#identity'), name = $('#name'), url = $('#url'), orders = $('#orders').val(), is_hide = $('input[name="is_hide"]:checked').val();
             if (identity.val() == '') {
-                layer.msg('标识不能为空', {icon: 5, time: 2000}, function(){
+                layer.msg('标识不能为空', {icon: 5, time: 1000}, function(){
                     identity.focus();
                 });
                 return false;
             }
             if (name.val() == '') {
-                layer.msg('菜单名称不能为空', {icon: 5, time: 2000}, function(){
+                layer.msg('菜单名称不能为空', {icon: 5, time: 1000}, function(){
                     name.focus();
                 });
                 return false;
@@ -131,7 +131,7 @@
                             location.href = '/menu/lists'
                         });
                     }else{
-                        layer.msg(data.info, {icon: 5, time: 2000});
+                        layer.msg(data.info, {icon: 5, time: 1000});
                     }
                 }
             });

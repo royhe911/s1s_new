@@ -13,6 +13,7 @@ return [
     '/'                      => 'admin/Admin/index',
     '/login'                 => 'admin/Admin/login', // 后台登录页
     '/admin'                 => 'admin/Admin/index', // 后台首页
+    '/upload'                => 'admin/Upload/upload_img', // 上传文件
     '/admin/doLogin'         => 'admin/Admin/do_login', // 后台登录操作
     '/admin/index_v1'        => 'admin/Admin/index_v1', // 后台首页欢迎页
     '/admin/lists'           => 'admin/Admin/lists', // 后台管理员列表
@@ -31,5 +32,8 @@ return [
     '/finance/putforwardlog' => 'admin/Finance/putforwardlog', // 提现记录
     '/finance/putforward'    => 'admin/Finance/putforward', // 提现
     '/finance/auditorf'      => 'admin/Finance/auditorf', // 提现审核
-    '/upload'                => 'admin/Upload/upload_img', // 上传文件
+    '/shop/index'            => 'admin/Shop/index', // 店铺列表
+    '/shop/add'              => 'admin/Shop/add', // 添加店铺
+    '/shop/edit'             => 'admin/Shop/edit', // 修改店铺
+    '/shop/auditor'          => 'admin/Shop/auditor', // 店铺审核
 ];

@@ -110,9 +110,9 @@
                         success: function(data){
                             if (data.status == 0) {
                                 location.reload();
-                                layer.msg(data.info, {icon: 6})
+                                layer.msg(data.info, {icon: 6, time: 1000})
                             } else {
-                                layer.msg(data.info, {icon: 5})
+                                layer.msg(data.info, {icon: 5, time: 1000})
                             }
                         }
                     })
@@ -129,9 +129,9 @@
                             success: function(data){
                                 if (data.status == 0) {
                                     location.reload();
-                                    layer.msg(data.info, {icon: 6})
+                                    layer.msg(data.info, {icon: 6, time: 1000})
                                 } else {
-                                    layer.msg(data.info, {icon: 5})
+                                    layer.msg(data.info, {icon: 5, time: 1000})
                                 }
                             }
                         })
