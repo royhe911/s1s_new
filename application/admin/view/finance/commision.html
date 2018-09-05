@@ -24,18 +24,19 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <form action="/shokey/index" method="post">
+                    <form action="/finance/commision" method="post">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tr>
-                            <td class="ttd"><input type="text" name="name" placeholder="客服名" class="input-sm form-control" value=""></td>
-                            <td class="ttd"><input type="text" name="start" id="start" placeholder="起始时间" class="form-control layer-date" value=""></td>
-                            <td class="ttd"><input type="text" name="end" id="end" placeholder="结束时间" class="form-control layer-date" value=""></td>
-                            <td class="ttd"><input type="text" name="wangwang" placeholder="旺旺号" class="input-sm form-control" value=""></td>
+                            <td class="ttd"><input type="text" name="name" placeholder="客服名" class="input-sm form-control" value="{$param['name']}"></td>
+                            <td class="ttd"><input type="text" name="start" id="start" placeholder="起始时间" class="form-control layer-date" value="{$param['start']}"></td>
+                            <td class="ttd"><input type="text" name="end" id="end" placeholder="结束时间" class="form-control layer-date" value="{$param['end']}"></td>
+                            <td class="ttd"><input type="text" name="wangwang" placeholder="旺旺号" class="input-sm form-control" value="{$param['wangwang']}"></td>
                             <td class="ttd">
                                 <select name="status" class="form-control">
                                     <option value="">…状态…</option>
-                                    <option value="0">未审核</option>
-                                    <option value="1">已审核</option>
+                                    <option value="0"{if($param['status']==='0')} selected="selected"{/if}>未审核</option>
+                                    <option value="8"{if($param['status']==8)} selected="selected"{/if}>已审核</option>
+                                    <option value="1"{if($param['status']==1)} selected="selected"{/if}>审核不通过</option>
                                 </select>
                             </td>
                             <td class="ttb"><input type="submit" class="btn btn-sm btn-primary" value="搜索"></td>

@@ -15,6 +15,7 @@
     <style type="text/css">
         .form-control{width: 200px;}
         .sj,.kf{display: none;}
+        #thumb{width: 120px;height: 120px;display: none;}
     </style>
 </head>
 <body class="gray-bg">
@@ -104,9 +105,10 @@
                                 <table width="100%">
                                     <tr>
                                         <td valign="top" width="120px"><input id="file_upload" name="file_upload" type="file"></td>
-                                        <td valign="top"><input class="btn btn-primary" type="button" data-action="upload" value="上传"></td>
+                                        <td valign="top"><!-- <input class="btn btn-primary" type="button" data-action="upload" value="上传"> --><div id="progress"></div><input type="hidden" id="avatar"></td>
                                     </tr>
-                                    <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="avatar"></td></tr>
+                                    <!-- <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="avatar"></td></tr> -->
+                                    <tr><td colspan="2"><img id="thumb" src=""></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -223,7 +225,7 @@
             }
         });
         $('#file_upload').uploadifive({
-            'auto'             : false,
+            'auto'             : true,
             'buttonText'       : '选择图片',
             'queueID'          : 'progress',
             'fileTypeDesc'     : 'Image Files',
@@ -239,7 +241,7 @@
                 // data = eval('(' + data + ')');
                 data = JSON.parse(data);
                 $('#avatar').val(data.path);
-                // $('#thumb').attr('src', '/uploads/' + data.path);
+                $('#thumb').css('display', 'block').attr('src', '/uploads/' + data.path);
             }
         });
     });

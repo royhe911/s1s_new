@@ -498,6 +498,46 @@ class Finance extends \think\Controller
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param = $this->request->post();
         $where = ['type' => 2];
+        if (!empty($param['start'])) {
+            $start            = strtotime($param['start']);
+            $where['addtime'] = ['>=', $start];
+            if (!empty($param['end'])) {
+                $where['addtime'] = ['between', [$start, strtotime($param['end'])]];
+            } else {
+                $param['end'] = '';
+            }
+        } elseif (!empty($param['end'])) {
+            $where['addtime'] = ['<=', strtotime($param['end'])];
+        } else {
+            $param['start'] = '';
+            $param['end']   = '';
+        }
+        $a       = new AdminModel();
+        $where_a = [];
+        if (!empty($param['name'])) {
+            $where_a['realname|nickname'] = ['like', "'%{$param['name']}%'"];
+        } else {
+            $param['name'] = '';
+        }
+        if (!empty($param['wangwang'])) {
+            $where_a['wangwang'] = ['like', "'%{$param['wangwang']}%'"];
+        } else {
+            $param['wangwang'] = '';
+        }
+        if (!empty($where_a)) {
+            $where_a['is_delete'] = 0;
+            $kf_ids               = '0';
+            $kf_list              = $a->getList($where_a, 'id');
+            foreach ($kf_list as $kf) {
+                $kf_ids .= ',' . $kf['id'];
+            }
+            $where['uid'] = ['in', $kf_ids];
+        }
+        if (isset($param['status']) && $param['status'] !== '') {
+            $where['status'] = $param['status'];
+        } else {
+            $param['status'] = '';
+        }
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
@@ -531,7 +571,7 @@ class Finance extends \think\Controller
                 }
             }
         }
-        return $this->fetch('commision', ['list' => $list, 'pages' => $pages, 'admin' => $admin]);
+        return $this->fetch('commision', ['list' => $list, 'pages' => $pages, 'admin' => $admin, 'param' => $param]);
     }
 
     /**
