@@ -32,6 +32,7 @@
                         <thead>
                         <tr>
                             <th>序号</th>
+                            {if($admin.role_id==1||$admin.role_id==2)}<th>商家名</th>{/if}
                             <th>店铺名</th>
                             <th>旺旺</th>
                             <!-- <th>店铺网址</th> -->
@@ -48,6 +49,7 @@
                         {foreach $list as $k=>$item}
                         <tr class="gradeX">
                             <td>{$k+1}</td>
+                            {if($admin.role_id==1||$admin.role_id==2)}<td>{$item.sj_name}</td>{/if}
                             <td><a href="{$item.url}" target="_blank">{$item.shop_name}</a></td>
                             <td>{$item.wangwang}</td>
                             <!-- <td><a href="{$item.url}" target="_blank">{$item.url}</a></td> -->

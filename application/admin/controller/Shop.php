@@ -149,8 +149,16 @@ class Shop extends \think\Controller
         $list     = $s->getList($where, true, "$page,$pagesize");
         $pages    = 0;
         if ($list) {
-            $count = $s->getCount($where);
+            $a      = new AdminModel();
+            $sj_arr = $a->getList(['is_delete' => 0, 'role_id' => 3], 'id,realname');
+            $sj_arr = array_column($sj_arr, 'realname', 'id');
+            $count  = $s->getCount($where);
             foreach ($list as &$item) {
+                if (!empty($sj_arr[$item['uid']])) {
+                    $item['sj_name'] = $sj_arr[$item['uid']];
+                } else {
+                    $item['sj_name'] = '';
+                }
                 if (!empty($item['addtime'])) {
                     $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
                 }
