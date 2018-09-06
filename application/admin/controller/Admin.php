@@ -270,7 +270,7 @@ class Admin extends \think\Controller
                 return ['status' => 4, 'info' => '修改失败'];
             }
             $l = new LogModel();
-            $l->addLog(['type' => TYPE_EDIT_USER, 'content' => '修改用户，被修改的用户ID：' . $id]);
+            $l->addLog(['type' => LogModel::TYPE_EDIT_USER, 'content' => '修改用户，被修改的用户ID：' . $id]);
             return ['status' => 0, 'info' => '修改成功'];
         } else {
             $id = $this->request->get('id');
@@ -287,8 +287,9 @@ class Admin extends \think\Controller
             }
             $roles    = $this->getRoles($role_w);
             $salesman = $this->getUsers(['role_id' => 2]);
+            $executive = $this->getUsers(['role_id' => 4]);
             $time     = time();
-            return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
+            return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'executive' => $executive, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
     }
 

@@ -15,7 +15,7 @@
     <style type="text/css">
         .form-control{width: 200px;}
         .sj,.kf{display: none;}
-        #thumb{width: 120px;height: 120px;display: none;}
+        #preview{max-width: 120px;max-height: 120px;display: none;}
     </style>
 </head>
 <body class="gray-bg">
@@ -71,7 +71,7 @@
                         <div class="form-group kf">
                             <label class="col-sm-2 control-label">主管</label>
                             <div class="col-sm-10">
-                                <select id="k_id" class="form-control">
+                                <select id="z_id" class="form-control">
                                     <option value="0">…请选择业务员…</option>
                                     {foreach $executive as $e}
                                     <option value="{$e['id']}">{$e['nickname']}</option>
@@ -105,10 +105,10 @@
                                 <table width="100%">
                                     <tr>
                                         <td valign="top" width="120px"><input id="file_upload" name="file_upload" type="file"></td>
-                                        <td valign="top"><!-- <input class="btn btn-primary" type="button" data-action="upload" value="上传"> --><div id="progress"></div><input type="hidden" id="avatar"></td>
+                                        <td valign="top"><input class="btn btn-primary" type="button" data-action="upload" value="上传"></td>
                                     </tr>
-                                    <!-- <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="avatar"></td></tr> -->
-                                    <tr><td colspan="2"><img id="thumb" src=""></td></tr>
+                                    <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="avatar"></td></tr>
+                                    <tr><td colspan="2"><img id="preview" src=""></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/h+/js/plugins/iCheck/icheck.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
-<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.min.js"></script>
+<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.js"></script>
 <script type="text/javascript">
     $(function(){
         $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
@@ -151,7 +151,7 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), k_id = $('#k_id').val(), s_id = $('#s_id').val(), avatar = $('#avatar').val();
+                var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), z_id = $('#z_id').val(), s_id = $('#s_id').val(), avatar = $('#avatar').val();
                 if (uid.val() == '') {
                     layer.msg('登录账号不能为空', {icon: 5, time: 1000}, function(){uid.focus()});
                     return false
@@ -176,11 +176,11 @@
                     layer.msg('真实姓名不能为空', {icon: 5, time: 1000}, function(){realname.focus()});
                     return false
                 }
-                if (role_id == 5 && k_id <= 0) {
+                if (role_id == 5 && z_id <= 0) {
                     layer.msg('请选择客服主管', {icon: 5, time: 1000});
                     return false
                 } else {
-                    k_id = 0;
+                    z_id = 0;
                 }
                 if (role_id == 3) {
                     if (nickname.val() == '') {
@@ -225,7 +225,7 @@
             }
         });
         $('#file_upload').uploadifive({
-            'auto'             : true,
+            'auto'             : false,
             'buttonText'       : '选择图片',
             'queueID'          : 'progress',
             'fileTypeDesc'     : 'Image Files',

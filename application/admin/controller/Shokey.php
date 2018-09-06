@@ -37,8 +37,49 @@ class Shokey extends \think\Controller
                 } else {
                     $item['kf_name'] = '暂无';
                 }
+                if ($item['sex'] == 1) {
+                    $item['sex_txt'] = '男';
+                } elseif ($item['sex'] == 2) {
+                    $item['sex_txt'] = '女';
+                } else {
+                    $item['sex_txt'] = '保密';
+                }
+                if ($item['status'] == 8) {
+                    $item['status_txt'] = '已审核';
+                } elseif ($item['status'] == 4) {
+                    $item['status_txt'] = '审核不通过';
+                } elseif ($item['status'] == 0) {
+                    $item['status_txt'] = '未审核';
+                }
             }
         }
-        return $this->fetch('index', ['list' => $list, 'pages' => $pages]);
+        return $this->fetch('index', ['list' => $list, 'pages' => $pages, 'admin' => $admin]);
+    }
+
+    /**
+     * 试客审核
+     * @Author 贺强
+     * @date   2018-09-06
+     * @param  ShokeyModel $s ShokeyModel 实例
+     */
+    public function auditors(ShokeyModel $s)
+    {
+        if ($this->request->isAjax()) {
+            $param = $this->request->post();
+            if (empty($param['id']) || empty($param['status'])) {
+                return ['status' => 2, 'info' => '非法参数'];
+            }
+            $reason = '';
+            if (!empty($param['reason'])) {
+                $reason = $param['reason'];
+            }
+            $res = $s->modify(['status' => $param['status'], 'reason' => $reason], ['id' => $param['id']]);
+            if (!$res) {
+                return ['status' => 4, 'info' => '审核失败'];
+            }
+            return ['status' => 0, 'info' => '审核成功'];
+        } else {
+            return ['status' => 1, 'info' => '非法操作'];
+        }
     }
 }

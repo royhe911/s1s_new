@@ -14,7 +14,8 @@
     <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
     <style type="text/css">
         .form-control{width: 200px;}
-        .sj{display: none;}
+        .sj,.kf{display: none;}
+        #preview{max-width: 120px;max-height: 120px;display: none;}
     </style>
 </head>
 <body class="gray-bg">
@@ -66,6 +67,18 @@
                                 <input type="text" class="form-control" id="realname" value="{$admin.realname}">
                             </div>
                         </div>
+                        <div class="hr-line-dashed kf"{if($admin.role_id==5)} style="display: block;"{/if}></div>
+                        <div class="form-group kf"{if($admin.role_id==5)} style="display: block;"{/if}>
+                            <label class="col-sm-2 control-label">主管</label>
+                            <div class="col-sm-10">
+                                <select id="z_id" class="form-control">
+                                    <option value="0">…请选择业务员…</option>
+                                    {foreach $executive as $e}
+                                    <option value="{$e['id']}"{if($admin.z_id==$e.id)} selected="selected"{/if}>{$e['nickname']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group sj"{if($admin.role_id==3)} style="display: block;"{/if}>
                             <label class="col-sm-2 control-label">昵称/商家名称</label>
@@ -95,6 +108,7 @@
                                         <td valign="top"><input class="btn btn-primary" type="button" data-action="upload" value="上传"></td>
                                     </tr>
                                     <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="avatar"></td></tr>
+                                    <tr><td colspan="2"><img id="preview" src=""></td></tr>
                                 </table>
                             </div>
                         </div>
@@ -157,7 +171,7 @@
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/h+/js/plugins/iCheck/icheck.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
-<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.min.js"></script>
+<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.js"></script>
 <script type="text/javascript">
     $(function(){
         $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
@@ -166,6 +180,11 @@
                 $('.sj').css('display', 'block')
             } else {
                 $('.sj').css('display', 'none')
+            }
+            if ($(this).val() == 5) {
+                $('.kf').css('display', 'block')
+            } else {
+                $('.kf').css('display', 'none')
             }
         });
         $('input[data-action]').click(function(){
@@ -188,6 +207,10 @@
                     layer.msg('昵称/商家名称不能为空', {icon: 5, time: 1000}, function(){nickname.focus()});
                     return false
                 }
+                if (role_id == 5 && z_id <= 0) {
+                    layer.msg('请选择客服主管', {icon: 5, time: 1000});
+                    return false
+                }
                 if (role_id == 3 && s_id <= 0) {
                     layer.msg('请选择业务员', {icon: 5, time: 1000});
                     return false
@@ -198,7 +221,7 @@
                     data: {'id': {$admin['id']}, 'uid': uid.val(), 'pwd': pwd2.val(), 'role_id': role_id, 'realname': realname.val(), 'nickname': nickname.val(), 's_id': s_id, 'avatar': avatar, 'email': $('#email').val(), 'mobile': $('#mobile').val(), 'qq': $('#qq').val(), 'wx': $('#wx').val(), 'bank_card': $('#bank_card').val(), 'bank_name': $('#bank_name').val()},
                     success: function(data){
                         if (data.status == 0) {
-                            layer.msg(data.info, {icon: 6});
+                            layer.msg(data.info, {icon: 6, time: 1000});
                         }else{
                             layer.msg(data.info, {icon: 5, time: 1000});
                         }
@@ -207,7 +230,7 @@
             } else if ($action == 'upload') {
                 $('#file_upload').uploadifive('upload')
             }{if($role_id==1)} else if ($action == 'cancel') {
-                location.href = '/admin/list';
+                location.href = '/admin/lists';
             }{/if}
         });
         $('#file_upload').uploadifive({

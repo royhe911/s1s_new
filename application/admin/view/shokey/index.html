@@ -72,7 +72,7 @@
                             <td>{$item.province}/{$item.city}</td>
                             <td>{$item.status_txt}</td>
                             <td>{$item.last_order_time}</td>
-                            <td>{if($item.status==0&&($admin.role_id==1||$admin.role_id==2))}<a href="javascript:;" data-action="auditor" data-id="{$item.id}">审核</a>{elseif($item.status==8&&$admin.role_id==3)}<a href="#?id={$item.id}">发布任务</a> | <a href="/shop/edit?id={$item.id}">编辑</a>{/if}</td>
+                            <td>{if($item.status==0&&($admin.role_id==1||$admin.role_id==4||$admin.role_id==5))}<a href="javascript:;" data-action="auditors" data-id="{$item.id}">审核</a>{/if}</td>
                         </tr>
                         {/foreach}
                         </tbody>
@@ -93,21 +93,28 @@
 <script type="text/javascript" src="/static/paging/paging-min.js"></script>
 <script>
     $(function () {
+        layer.config({extend: 'extend/layer.ext.js'});
         $('a[data-action]').click(function(){
             var $action = $(this).data('action'), $id = $(this).data('id');
-            if($action == 'auditor'){
-                layer.confirm('店铺审核', {
+            if($action == 'auditors'){
+                layer.confirm('试客审核', {
                     btn: ['通过', '不通过', '取消'],
                     shade: false,
                     closeBtn: 0
                 }, function(){
-                    auditor($id, 8)
+                    auditors($id, 8)
                 }, function(){
-                    auditor($id, 4)
+                    layer.prompt({
+                        formType: 2,
+                        title: '请输入驳回原因'
+                    }, function(v, i, e){
+                        layer.close(i);
+                        auditors($id, 4, v)
+                    })
                 })
             }
         });
-        function auditor($id, $status) {
+        function auditors($id, $status, $v) {
             var $msg = '确实审核通过吗？';
             if ($status == 4) {
                 $msg = '确实审核不通过吗？';
@@ -115,8 +122,8 @@
             layer.confirm($msg, {icon: 3}, function(){
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
-                    url: '/shop/auditor',
-                    data:{'id': $id, 'status': $status},
+                    url: '/shokey/auditors',
+                    data:{'id': $id, 'status': $status, 'reason': $v},
                     success: function(data){
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 1, time: 1000}, function(){

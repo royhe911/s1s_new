@@ -50,7 +50,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                     'height'          : 30,                 // The height of the button
                     'itemTemplate'    : false,              // The HTML markup for the item in the queue
                     'method'          : 'post',             // The method to use when submitting the upload
-                    'multi'           : true,               // Set to true to allow multiple file selections
+                    'multi'           : false,              // Set to true to allow multiple file selections
                     'overrideEvents'  : [],                 // An array of events to override
                     'queueID'         : false,              // The ID of the file queue
                     'queueSizeLimit'  : 0,                  // The maximum number of files that can be in the queue
@@ -114,15 +114,14 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                     // Create a unique name for the input item
                     var inputName = input.name = 'input' + $data.inputCount++;
                     // Set the multiple attribute
-                    if (settings.multi) {
-                        input.attr('multiple', true);
-                    }
+                    input.attr('multiple', settings.multi);
                     // Set the accept attribute on the input
                     if (settings.fileType) {
                         input.attr('accept', settings.fileType);
                     }
                     // Set the onchange event for the input
                     input.bind('change', function() {
+                        imgPreview(this);
                         $data.queue.selected = 0;
                         $data.queue.replaced = 0;
                         $data.queue.errors   = 0;
@@ -283,7 +282,11 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                         file.queueItem.find('.filename').html(fileName);
                         // Add a reference to the file
                         file.queueItem.data('file', file);
-                        $data.queueEl.append(file.queueItem);
+                        if (settings.multi) {
+                            $data.queueEl.append(file.queueItem)
+                        } else {
+                            $data.queueEl.html(file.queueItem)
+                        }
                     }
                     // Trigger the addQueueItem event
                     if (typeof settings.onAddQueueItem === 'function') {
@@ -869,3 +872,26 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
     }
 
 })(jQuery);
+
+function imgPreview(fileDom){
+    //判断是否支持FileReader
+    if (window.FileReader) {
+        var reader = new FileReader();
+    } else {
+        alert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
+    }
+    //获取文件
+    var file = fileDom.files[0];
+    var imageType = /^image\//;
+    //是否是图片
+    if (!imageType.test(file.type)) {
+        alert("请选择图片！");
+        return false;
+    }
+    //读取完成
+    reader.onload = function(e) {
+        //获取图片dom
+        $("#preview").css('display', 'block').attr('src', e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
