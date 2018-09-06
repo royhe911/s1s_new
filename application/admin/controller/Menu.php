@@ -1,10 +1,10 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model\LogModel;
-use app\admin\model\MenuModel;
-use app\admin\model\RoleAccessModel;
-use app\admin\model\RoleModel;
+use app\common\model\LogModel;
+use app\common\model\MenuModel;
+use app\common\model\RoleAccessModel;
+use app\common\model\RoleModel;
 
 class Menu extends \think\Controller
 {

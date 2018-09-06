@@ -1,8 +1,8 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model\AdminModel;
-use app\admin\model\ShopModel;
+use app\common\model\AdminModel;
+use app\common\model\ShopModel;
 
 /**
  * 店铺管理

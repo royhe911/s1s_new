@@ -1,8 +1,8 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model\AdminModel;
-use app\admin\model\ShokeyModel;
+use app\common\model\AdminModel;
+use app\common\model\ShokeyModel;
 
 /**
  * 试客管理

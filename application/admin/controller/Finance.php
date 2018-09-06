@@ -1,12 +1,12 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model\AdminModel;
-use app\admin\model\BalanceModel;
-use app\admin\model\LogModel;
-use app\admin\model\PaylogModel;
-use app\admin\model\PutforwardModel;
-use app\admin\model\RechargeModel;
+use app\common\model\AdminModel;
+use app\common\model\BalanceModel;
+use app\common\model\LogModel;
+use app\common\model\PaylogModel;
+use app\common\model\PutforwardModel;
+use app\common\model\RechargeModel;
 
 /**
  * 财务管理
