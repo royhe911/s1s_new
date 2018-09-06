@@ -36,6 +36,12 @@ class LogModel extends CommonModel
     const TYPE_DELETE_MENU              = 24; // 删除菜单
     const TYPE_EDIT_MENU                = 25; // 编辑菜单
     const TYPE_POWER                    = 26; // 菜单权限分配
+    const TYPE_PUTFORWARD               = 27; // 商家提现
+    const TYPE_CWRECHARGE               = 28; // 财务充值
+    const TYPE_ADDSHOP                  = 29; // 添加店铺
+    const TYPE_EDITSHOP                 = 30; // 修改店铺
+    const TYPE_AUDITORS                 = 31; // 试客审核
+    const TYPE_AUDITOR                  = 32; //店铺审核
 
     /**
      * 写操作日志

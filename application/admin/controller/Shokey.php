@@ -74,6 +74,8 @@ class Shokey extends \think\Controller
                 $reason = $param['reason'];
             }
             $res = $s->modify(['status' => $param['status'], 'reason' => $reason], ['id' => $param['id']]);
+            $l   = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_AUDITORS, 'content' => '试客审核，审核者ID：' . $admin['id']] . '，试客ID：' . $param['id']);
             if (!$res) {
                 return ['status' => 4, 'info' => '审核失败'];
             }

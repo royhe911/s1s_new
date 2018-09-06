@@ -43,6 +43,8 @@ class Shop extends \think\Controller
             $param['uid']     = $admin['id'];
             $param['addtime'] = time();
             $res              = $s->add($param);
+            $l                = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_ADDSHOP, 'content' => ' 添加店铺，添加者ID：' . $admin['id']] . '，添加的店铺ID：' . $res);
             if (!$res) {
                 return ['status' => 4, 'info' => '添加失败'];
             }
@@ -78,6 +80,8 @@ class Shop extends \think\Controller
             if ($res === false) {
                 return ['status' => 4, 'info' => '修改失败'];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_EIDTSHOP, 'content' => '修改店铺，修改者ID：' . $admin['id']] . '，修改的店铺ID：' . $param['id']);
             return ['status' => 0, 'info' => '修改成功'];
         } else {
             $id = $this->request->get('id');
@@ -116,6 +120,8 @@ class Shop extends \think\Controller
             if ($res === false) {
                 return ['status' => 4, 'info' => '审核失败'];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_AUDITOR, 'content' => '店铺审核，审核者ID：' . $admin['id']] . '，店铺ID：' . $id);
             return ['status' => 0, 'info' => '审核成功'];
         } else {
             return ['status' => 1, 'info' => '非法操作'];

@@ -354,6 +354,8 @@ class Finance extends \think\Controller
                 }
                 return ['status' => $res, 'info' => $msg];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_PUTFORWARD, 'content' => '商家提现，商家ID：' . $admin['id']]);
             return ['status' => 0, 'info' => '提现申请成功，请等等审核'];
         } else {
             return $this->fetch('putforward');
@@ -521,6 +523,8 @@ class Finance extends \think\Controller
             if ($res !== true) {
                 return ['status' => $res, 'info' => '充值失败'];
             }
+            $l = new LogModel();
+            $l->addLog(['type' => LogModel::TYPE_CWRECHARGE, 'content' => '财务充值，财务ID：' . $admin['id']] . '，充值金额：' . $param['money']);
             return ['status' => 0, 'info' => '充值成功'];
         } else {
             return $this->fetch('cwpay');
@@ -632,9 +636,11 @@ class Finance extends \think\Controller
             if (empty($id) || empty($status)) {
                 return ['status' => 2, 'info' => '非法参数'];
             }
+            $l = new LogModel();
             if ($status == 8) {
                 // 调用 model 层方法使用事务确保金额一致性
                 $res = $p->auditor($id, $status);
+                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '佣金审核通过，审核者ID：' . $admin['id']] . '，佣金ID：' . $id);
                 if ($res !== true) {
                     switch ($res) {
                         case 1:
@@ -648,10 +654,10 @@ class Finance extends \think\Controller
                 }
             } else {
                 $res = $p->modifyField(['status' => $status, 'reason' => $reason], ['id' => $id]);
+                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '佣金审核不通过，审核者ID：' . $admin['id']] . '，佣金ID：' . $id);
                 if (!$res) {
                     return ['status' => 5, 'info' => '审核失败'];
                 }
-                return ['status' => 0, 'info' => '审核成功'];
             }
             return ['status' => 0, 'info' => '审核成功'];
         } else {
