@@ -458,7 +458,7 @@ class Finance extends \think\Controller
     }
 
     /**
-     * 站点补款
+     * 平台打款
      * @Author 贺强
      * @date   2018-09-05
      * @param  PaylogModel $p PaylogModel 实例
@@ -469,6 +469,20 @@ class Finance extends \think\Controller
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $param = $this->request->post();
         $where = ['type' => 1];
+        if (!empty($param['start'])) {
+            $start            = strtotime($param['start']);
+            $where['addtime'] = ['>=', $start];
+            if (!empty($param['end'])) {
+                $where['addtime'] = ['between', [$start, strtotime($param['end'])]];
+            } else {
+                $param['end'] = '';
+            }
+        } elseif (!empty($param['end'])) {
+            $where['addtime'] = ['<=', strtotime($param['end'])];
+        } else {
+            $param['start'] = '';
+            $param['end']   = '';
+        }
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
@@ -476,14 +490,39 @@ class Finance extends \think\Controller
         $pages    = 0;
         if ($list) {
             $count = $p->getCount($where);
-            $pages = ceil($count / $pages);
+            $pages = ceil($count / $pagesize);
             foreach ($list as &$item) {
                 if (!empty($item['addtime'])) {
                     $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
                 }
             }
         }
-        return $this->fetch('supplement', ['list' => $list, 'pages' => $pages]);
+        return $this->fetch('supplement', ['list' => $list, 'pages' => $pages, 'param' => $param]);
+    }
+
+    /**
+     * 客服充值
+     * @Author 贺强
+     * @date   2018-09-06
+     * @param  PaylogModel $p PaylogModel 实例
+     */
+    public function kfpay(PaylogModel $p)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        if ($this->request->isAjax()) {
+            $param = $this->request->post();
+            if (empty($param['money'])) {
+                return ['status' => 1, 'info' => '非法参数'];
+            }
+            $res = $p->kfpay($param);
+            if ($res !== true) {
+                return ['status' => $res, 'info' => '充值失败'];
+            }
+            return ['status' => 0, 'info' => '充值成功'];
+        } else {
+            return $this->fetch('kfpay');
+        }
     }
 
     /**
@@ -515,12 +554,12 @@ class Finance extends \think\Controller
         $a       = new AdminModel();
         $where_a = [];
         if (!empty($param['name'])) {
-            $where_a['realname|nickname'] = ['like', "'%{$param['name']}%'"];
+            $where_a['realname|nickname'] = ['like', "%{$param['name']}%"];
         } else {
             $param['name'] = '';
         }
         if (!empty($param['wangwang'])) {
-            $where_a['wangwang'] = ['like', "'%{$param['wangwang']}%'"];
+            $where_a['wangwang'] = ['like', "%{$param['wangwang']}%"];
         } else {
             $param['wangwang'] = '';
         }

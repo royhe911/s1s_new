@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商家提现</title>
+    <title>客服充值</title>
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
     <!-- Data Tables -->
@@ -14,7 +14,6 @@
     <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
     <style type="text/css">
         .form-control{width: 200px;}
-        .col-sm-10{display: inline-block;}
         .red{color: #f00;font-size: 18px;}
     </style>
 </head>
@@ -26,23 +25,16 @@
                 <div class="ibox-content">
                     <form class="form-horizontal" onsubmit="return false">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span class="red">*</span>提现金额</label>
+                            <label class="col-sm-2 control-label"><span class="red">*</span>充值金额</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="amount">
+                                <input type="text" class="form-control" id="money">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span class="red">*</span>银行卡号</label>
+                            <label class="col-sm-2 control-label">备注</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="bank_card">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"><span class="red">*</span>银行卡姓名</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="bank_name">
+                                <textarea rows="5" cols="50" id="remark"></textarea>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -67,24 +59,16 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var a = $('#amount'), c = $('#bank_card'), n = $('#bank_name');
+                var m = $('#money');
                 var reg = /^(\d+)(\.\d{1,2})?$/;
-                if (a.val() == '' || !reg.test(a.val())) {
+                if (m.val() == '' || !reg.test(m.val())) {
                     layer.msg('金额输入错误', {icon: 3, time: 1000}, function(){a.focus()});
-                    return false
-                }
-                if (c.val() == '') {
-                    layer.msg('请填写银行卡号', {icon: 3, time: 1000}, function(){c.focus()});
-                    return false
-                }
-                if (n.val() == '') {
-                    layer.msg('请填写银行卡姓名', {icon: 3, time: 1000}, function(){n.focus()});
                     return false
                 }
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
-                    url: '/finance/putforward',
-                    data: {'amount': a.val(), 'bank_card': c.val(), 'bank_name': n.val()},
+                    url: '/finance/kfpay',
+                    data: {'money': m.val(), 'remark': $('#remark').val()},
                     success: function(data){
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 6, time: 1000}, function(){

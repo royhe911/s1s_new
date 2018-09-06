@@ -48,4 +48,37 @@ class PaylogModel extends CommonModel
         Db::commit();
         return true;
     }
+
+    /**
+     * 客服充值
+     * @Author 贺强
+     * @date   2018-09-06
+     * @param  array      $param 充值参数
+     */
+    public function kfpay($param = [])
+    {
+        $a     = new AdminModel();
+        $model = $a->getModel(['is_delete' => 0, 'role_id' => 6], 'id,balance');
+        if (empty($model)) {
+            return 1;
+        }
+        $after_money           = $model['balance'] + $param['money'];
+        $param['addtime']      = time();
+        $param['before_money'] = $model['balance'];
+        $param['after_money']  = $after_money;
+        $param['type']         = 1;
+        Db::startTrans();
+        $res = $this->add($param);
+        if (!$res) {
+            Db::rollback();
+            return 2;
+        }
+        $res = $a->modifyField('balance', $after_money, ['id' => $model['id']]);
+        if (!$res) {
+            Db::rollback();
+            return 3;
+        }
+        Db::commit();
+        return true;
+    }
 }
