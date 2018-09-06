@@ -497,7 +497,9 @@ class Finance extends \think\Controller
                 }
             }
         }
-        return $this->fetch('supplement', ['list' => $list, 'pages' => $pages, 'param' => $param]);
+        $a       = new AdminModel();
+        $balance = $a->getModel(['id' => $admin['id']], 'balance');
+        return $this->fetch('supplement', ['balance' => $balance['balance'], 'list' => $list, 'pages' => $pages, 'param' => $param]);
     }
 
     /**
@@ -506,7 +508,7 @@ class Finance extends \think\Controller
      * @date   2018-09-06
      * @param  PaylogModel $p PaylogModel 实例
      */
-    public function kfpay(PaylogModel $p)
+    public function cwpay(PaylogModel $p)
     {
         // 判断是否有权限访问或操作
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
@@ -515,13 +517,13 @@ class Finance extends \think\Controller
             if (empty($param['money'])) {
                 return ['status' => 1, 'info' => '非法参数'];
             }
-            $res = $p->kfpay($param);
+            $res = $p->cwpay($param);
             if ($res !== true) {
                 return ['status' => $res, 'info' => '充值失败'];
             }
             return ['status' => 0, 'info' => '充值成功'];
         } else {
-            return $this->fetch('kfpay');
+            return $this->fetch('cwpay');
         }
     }
 

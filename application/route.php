@@ -35,7 +35,7 @@ return [
     '/finance/commision'     => 'admin/Finance/commision', // 佣金审核
     '/finance/auditorp'      => 'admin/Finance/auditorp', // 审核佣金申请
     '/finance/supplement'    => 'admin/Finance/supplement', // 平台打款
-    '/finance/kfpay'         => 'admin/Finance/kfpay', // 客服充值
+    '/finance/cwpay'         => 'admin/Finance/cwpay', // 客服充值
     '/shop/index'            => 'admin/Shop/index', // 店铺列表
     '/shop/add'              => 'admin/Shop/add', // 添加店铺
     '/shop/edit'             => 'admin/Shop/edit', // 修改店铺

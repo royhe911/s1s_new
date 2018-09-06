@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>佣金审核</title>
+    <title>平台打款</title>
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
     <!-- Data Tables -->
@@ -27,7 +27,8 @@
                     <form action="/finance/supplement" method="post">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tr>
-                            <td class="ttb"><input type="button" data-action="kfpay" class="btn btn-sm" value="充值"></td>
+                            <td class="ttd">账户余额：{$balance}</td>
+                            <td class="ttb"><input type="button" data-action="cwpay" class="btn btn-sm" value="充值"></td>
                             <td class="ttd"><input type="text" name="start" id="start" placeholder="起始时间" class="form-control layer-date" value="{$param['start']}"></td>
                             <td class="ttd"><input type="text" name="end" id="end" placeholder="结束时间" class="form-control layer-date" value="{$param['end']}"></td>
                             <td class="ttb"><input type="submit" class="btn btn-sm btn-primary" value="搜索"></td>
@@ -80,12 +81,12 @@
     $(function () {
         $('input[data-action]').click(function(){
             var $action = $(this).data('action');
-            if ($action == 'kfpay') {
+            if ($action == 'cwpay') {
                 layer.open({
                     type: 2,
                     title: '充值',
                     shadeClose: false,
-                    content: '/finance/kfpay',
+                    content: '/finance/cwpay',
                     area: ['500px', '56%']
                 })
             }

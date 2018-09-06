@@ -103,10 +103,10 @@ class Admin extends \think\Controller
     public function do_login(AdminModel $a)
     {
         $param = $this->request->post();
-        if (empty($param['uid']) || empty($param['pwd'])) {
+        if (empty($param['username']) || empty($param['pwd'])) {
             return ['status' => 3, 'info' => '用户名或密码不能为空'];
         }
-        $admin = $a->getModel(['uid|mobile' => $param['uid']]);
+        $admin = $a->getModel(['username|mobile' => $param['username']]);
         if (empty($admin)) {
             return ['status' => 2, 'info' => '用户名或密码错误'];
         }

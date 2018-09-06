@@ -23,7 +23,7 @@
             <h3>后台管理</h3>
             <form class="m-t" role="form" action="#" method="post">
                 <div class="form-group">
-                    <input type="text" id="uid" name="uid" class="form-control" placeholder="用户名" required="">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="用户名" required="">
                 </div>
                 <div class="form-group">
                     <input type="password" id="pwd" name="pwd" class="form-control" placeholder="密码" required="">
@@ -43,11 +43,11 @@
                 }
             });
             $('#submit').click(function(){
-                var uid = $('#uid');
+                var username = $('#username');
                 var pwd = $('#pwd');
-                if(uid.val() == ''){
+                if(username.val() == ''){
                     layer.msg('登录用户名不能为空', {icon: 2, time: 1500}, function(){
-                        uid.focus();
+                        username.focus();
                         return false;
                     });
                 }else if(pwd.val() == ''){
@@ -59,7 +59,7 @@
                     $.ajax({
                         type: 'post', dataType: 'json', cache: false,
                         url: '/admin/doLogin',
-                        data: {'uid': uid.val(), 'pwd': pwd.val()},
+                        data: {'username': username.val(), 'pwd': pwd.val()},
                         success: function(msg){
                             if (msg.status == 0) {
                                 layer.msg(msg.info, {icon: 1, time: 1000}, function(){

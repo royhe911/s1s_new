@@ -55,7 +55,7 @@ class PaylogModel extends CommonModel
      * @date   2018-09-06
      * @param  array      $param 充值参数
      */
-    public function kfpay($param = [])
+    public function cwpay($param = [])
     {
         $a     = new AdminModel();
         $model = $a->getModel(['is_delete' => 0, 'role_id' => 6], 'id,balance');

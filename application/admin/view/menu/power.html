@@ -36,7 +36,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 100px;">序号</th>
-                                <th>标识</th>
+                                <th width="300px">标识</th>
                                 <th>名称</th>
                                 <th>排序</th>
                                 <th>操作</th>
@@ -44,7 +44,7 @@
                         </thead>
                         <tbody>
                             {foreach $list as $key=>$item}
-                            <tr>
+                            <tr class="gradeX">
                                 <td>{$key+1}</td>
                                 <td{if($item.pid!=0)} style="text-indent: 30px;"{/if}>{$item.identity}</td>
                                 <td{if($item.pid!=0)} style="text-indent: 30px;"{/if}>{$item.name}</td>
@@ -64,6 +64,12 @@
 <script type="text/javascript" src="/static/layer/layer.js"></script>
 <script type="text/javascript">
     $(function(){
+        $('.gradeX').each(function(){
+            $(this).children('td:eq(4)').siblings().click(function(){
+                var chk = $(this).parent('tr').find('.menu_id');
+                chk.click()
+            })
+        });
         $('#roles').change(function(){
             if ($(this).val() != 0) {
                 location.href = '/menu/power?role_id=' + $(this).val();

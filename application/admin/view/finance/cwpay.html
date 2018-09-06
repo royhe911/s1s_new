@@ -67,7 +67,7 @@
                 }
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
-                    url: '/finance/kfpay',
+                    url: '/finance/cwpay',
                     data: {'money': m.val(), 'remark': $('#remark').val()},
                     success: function(data){
                         if (data.status == 0) {
