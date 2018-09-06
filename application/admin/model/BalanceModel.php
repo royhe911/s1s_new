@@ -60,41 +60,44 @@ class BalanceModel extends CommonModel
         ];
         // 开启事务操作用户余额
         Db::startTrans();
-        if ($type === 2) {
-            // 如果是充值，修改充值状态
-            $r   = new RechargeModel();
-            $res = $r->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
-            if (!$res) {
-                Db::rollback();
-                return 8;
+        try {
+            if ($type === 2) {
+                // 如果是充值，修改充值状态
+                $r   = new RechargeModel();
+                $res = $r->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
+                if (!$res) {
+                    throw new \Exception(8);
+                }
+            } elseif ($type === 3) {
+                // 如果是发布任务，修改任务状态
+                $p  = new ProductModel();
+                $pr = new ProductArrModel();
+            } elseif ($type === 1) {
+                // 如果是提现，修改提现状态
+                $p   = new PutforwardModel();
+                $res = $p->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
+                if (!$res) {
+                    throw new \Exception(8);
+                }
             }
-        } elseif ($type === 3) {
-            // 如果是发布任务，修改任务状态
-            $p  = new ProductModel();
-            $pr = new ProductArrModel();
-        } elseif ($type === 1) {
-            // 如果是提现，修改提现状态
-            $p   = new PutforwardModel();
-            $res = $p->modify(['status' => $data['status'], 'auditor_time' => time()], ['id' => $data['id']]);
-            if (!$res) {
-                Db::rollback();
-                return 8;
+            // 修改对应用户余额
+            $res = $a->modifyField('balance', $after_money, ['id' => $uid]);
+            if ($res === false) {
+                throw new \Exception(6);
+
             }
-        }
-        // 修改对应用户余额
-        $res = $a->modifyField('balance', $after_money, ['id' => $uid]);
-        if ($res === false) {
+            // 添加金额变动流水记录
+            $b   = new BalanceModel();
+            $res = $b->add($log);
+            if (!$res) {
+                throw new \Exception(7);
+
+            }
+            Db::commit();
+            return true;
+        } catch (\Exception $e) {
             Db::rollback();
-            return 6;
+            return $e->getMessage();
         }
-        // 添加金额变动流水记录
-        $b   = new BalanceModel();
-        $res = $b->add($log);
-        if (!$res) {
-            Db::rollback();
-            return 7;
-        }
-        Db::commit();
-        return true;
     }
 }
