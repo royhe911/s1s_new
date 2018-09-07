@@ -36,6 +36,8 @@ return [
     '/finance/auditorp'      => 'admin/Finance/auditorp', // 审核佣金申请
     '/finance/supplement'    => 'admin/Finance/supplement', // 平台打款
     '/finance/cwpay'         => 'admin/Finance/cwpay', // 客服充值
+    '/finance/applylog'      => 'admin/Finance/applylog', // 申请佣金
+    '/finance/apply'         => 'admin/Finance/apply', // 佣金申请
     '/shop/index'            => 'admin/Shop/index', // 店铺列表
     '/shop/add'              => 'admin/Shop/add', // 添加店铺
     '/shop/edit'             => 'admin/Shop/edit', // 修改店铺

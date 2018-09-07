@@ -41,7 +41,8 @@ class LogModel extends CommonModel
     const TYPE_ADDSHOP                  = 29; // 添加店铺
     const TYPE_EDITSHOP                 = 30; // 修改店铺
     const TYPE_AUDITORS                 = 31; // 试客审核
-    const TYPE_AUDITOR                  = 32; //店铺审核
+    const TYPE_AUDITOR                  = 32; // 店铺审核
+    const TYPE_AUDITORP                 = 33; // 佣金审核
 
     /**
      * 写操作日志

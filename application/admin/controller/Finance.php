@@ -532,6 +532,90 @@ class Finance extends \think\Controller
     }
 
     /**
+     * 申请佣金记录
+     * @Author 贺强
+     * @date   2018-09-07
+     * @param  PaylogModel $p PaylogModel 实例
+     */
+    public function applylog(PaylogModel $p)
+    {
+        // 判断是否有权限访问或操作
+        $admin   = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $a       = new AdminModel();
+        $balance = $a->getModel(['id' => $admin['id']], 'balance');
+        $param   = $this->request->post();
+        $where   = ['type' => 2];
+        if ($admin['role_id'] === 4) {
+            $where['uid'] = $admin['id'];
+        } elseif ($admin['role_id'] !== 1) {
+            $this->error('暂无权限访问');
+        }
+        if (isset($param['status']) && $param['status'] !== '') {
+            $where['status'] = $param['status'];
+        } else {
+            $param['status'] = '';
+        }
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $p->getList($where, true, "$page,$pagesize", 'status,addtime desc');
+        $pages    = 0;
+        if ($list) {
+            $count = $p->getCount($where);
+            $pages = ceil($count / $pagesize);
+            foreach ($list as &$item) {
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                }
+                if ($item['status'] === 0) {
+                    $item['status_txt'] = '未审核';
+                } elseif ($item['status'] === 1) {
+                    $item['status_txt'] = '审核不通过';
+                } elseif ($item['status'] === 8) {
+                    $item['status_txt'] = '已审核';
+                } else {
+                    $item['status_txt'] = '';
+                }
+            }
+        }
+        return $this->fetch('applylog', ['admin' => $admin, 'list' => $list, 'pages' => $pages, 'param' => $param, 'balance' => $balance['balance']]);
+    }
+
+    /**
+     * 申请佣金
+     * @Author 贺强
+     * @date   2018-09-07
+     * @param  PaylogModel $p PaylogModel 实例
+     */
+    public function apply(PaylogModel $p)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        if ($this->request->isAjax()) {
+            $reg   = '/^(\d+)(\.\d{1,2})?$/';
+            $money = $this->request->post('money');
+            if (!preg_match($reg, $money)) {
+                return ['status' => 1, 'info' => '申请金额有误'];
+            }
+            $data['uid']          = $admin['id'];
+            $data['money']        = $money;
+            $a                    = new AdminModel();
+            $balance              = $a->getModel(['id' => $admin['id']], 'balance');
+            $data['before_money'] = $balance['balance'];
+            $data['after_money']  = $balance['balance'] + $money;
+            $data['type']         = 2;
+            $data['addtime']      = time();
+            $res                  = $p->add($data);
+            if (!$res) {
+                return ['status' => 4, 'info' => '申请失败'];
+            }
+            return ['status' => 0, 'info' => '申请成功，请等待审核'];
+        } else {
+            return $this->fetch('apply');
+        }
+    }
+
+    /**
      * 佣金审核
      * @Author 贺强
      * @date   2018-09-05
@@ -586,7 +670,7 @@ class Finance extends \think\Controller
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
-        $list     = $p->getList($where, 'id,addtime,uid,money,balance,status,type', "$page,$pagesize", 'status,addtime desc');
+        $list     = $p->getList($where, 'id,addtime,uid,money,before_money,status,type', "$page,$pagesize", 'status,addtime desc');
         $pages    = 0;
         if ($list) {
             $count  = $p->getCount($where);
@@ -640,7 +724,6 @@ class Finance extends \think\Controller
             if ($status == 8) {
                 // 调用 model 层方法使用事务确保金额一致性
                 $res = $p->auditor($id, $status);
-                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '佣金审核通过，审核者ID：' . $admin['id']] . '，佣金ID：' . $id);
                 if ($res !== true) {
                     switch ($res) {
                         case 1:
@@ -652,9 +735,10 @@ class Finance extends \think\Controller
                     }
                     return ['status' => $res, 'info' => $msg];
                 }
+                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '审核通过，审核者ID：' . $admin['id'] . '，佣金ID：' . $id]);
             } else {
-                $res = $p->modifyField(['status' => $status, 'reason' => $reason], ['id' => $id]);
-                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '佣金审核不通过，审核者ID：' . $admin['id']] . '，佣金ID：' . $id);
+                $res = $p->modify(['status' => $status, 'reason' => $reason, 'auditor_time' => time()], ['id' => $id]);
+                $l->addLog(['type' => LogModel::TYPE_AUDITORP, 'content' => '审核不通过，审核者ID：' . $admin['id'] . '，佣金ID：' . $id]);
                 if (!$res) {
                     return ['status' => 5, 'info' => '审核失败'];
                 }

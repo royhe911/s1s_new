@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>佣金审核</title>
+    <title>申请佣金</title>
     <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
     <!-- Data Tables -->
@@ -15,7 +15,7 @@
     <style type="text/css">
         .form-control{width: 100px;}
         .ttd{width: 120px;text-align: center;}
-        .ttb{width: 80px;text-align: center;}
+        .ttb{width: 120px;text-align: center;}
     </style>
 </head>
 <body class="gray-bg">
@@ -24,13 +24,11 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <form action="/finance/commision" method="post">
+                    <form action="/finance/applylog" method="post">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tr>
-                            <td class="ttd"><input type="text" name="name" placeholder="客服名" class="input-sm form-control" value="{$param['name']}"></td>
-                            <td class="ttd"><input type="text" name="start" id="start" placeholder="起始时间" class="form-control layer-date" value="{$param['start']}"></td>
-                            <td class="ttd"><input type="text" name="end" id="end" placeholder="结束时间" class="form-control layer-date" value="{$param['end']}"></td>
-                            <td class="ttd"><input type="text" name="wangwang" placeholder="旺旺号" class="input-sm form-control" value="{$param['wangwang']}"></td>
+                            {if($admin['role_id']===4)}<td class="ttd">账户余额：{$balance}</td>{/if}
+                            <td class="ttb"><input class="btn btn-primary" type="button" data-action="apply" value="申请佣金"></td>
                             <td class="ttd">
                                 <select name="status" class="form-control">
                                     <option value="">…状态…</option>
@@ -51,11 +49,10 @@
                         <tr>
                             <th>序号</th>
                             <th>申请时间</th>
-                            <th>客服名称</th>
                             <th>申请金额</th>
                             <th>申请人余额</th>
                             <th>状态</th>
-                            <th>操作</th>
+                            <th>备注</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -63,11 +60,10 @@
                         <tr class="gradeX">
                             <td>{$k+1}</td>
                             <td>{$item.addtime}</td>
-                            <td>{$item.kf_name}</td>
                             <td>{$item.money}</td>
                             <td>{$item.before_money}</td>
                             <td>{$item.status_txt}</td>
-                            <td>{if($item.status==0&&($admin.role_id==1||$admin.role_id==6))}<a href="javascript:;" data-action="auditorp" data-id="{$item.id}" data-uid="{$item.uid}">审核</a>{/if}</td>
+                            <td>{$item.remark}</td>
                         </tr>
                         {/foreach}
                         </tbody>
@@ -85,72 +81,21 @@
 </body>
 <script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/layer/layer.js"></script>
-<script type="text/javascript" src="/static/h+/js/plugins/layer/laydate/laydate.js"></script>
 <script type="text/javascript" src="/static/paging/paging-min.js"></script>
 <script>
     $(function () {
-        var start = {
-            elem: "#start",
-            format: "YYYY-MM-DD",
-            max: "2099-06-16 23:59:59",
-            choose: function (datas) {
-                end.min = datas;
-                end.start = datas
-            }
-        };
-        var end = {
-            elem: "#end",
-            format: "YYYY-MM-DD",
-            max: "2099-06-16 23:59:59",
-            choose: function (datas) {
-                start.max = datas
-            }
-        };
-        laydate(start);
-        laydate(end);
-        layer.config({extend: 'extend/layer.ext.js'});
-        $('a[data-action]').click(function(){
-            var $action = $(this).data('action'), $id = $(this).data('id');
-            if($action == 'auditorp'){
-                layer.confirm('佣金审核', {
-                    btn: ['通过', '不通过', '取消'],
-                    shade: false,
-                    closeBtn: 0
-                }, function(){
-                    auditorp($id, 8)
-                }, function(){
-                    layer.prompt({
-                        formType: 2,
-                        title: '请输入驳回原因'
-                    }, function(v, i, e){
-                        layer.close(i);
-                        auditorp($id, 1, v)
-                    })
+        $('input[data-action]').click(function(){
+            $action = $(this).data('action');
+            if ($action == 'apply') {
+                layer.open({
+                    type: 2,
+                    title: '申请佣金',
+                    shadeClose: false,
+                    content: '/finance/apply',
+                    area: ['350px', '40%']
                 })
             }
-        });
-        function auditorp($id, $status, $v) {
-            var $msg = '确实审核通过吗？';
-            if ($status == 1) {
-                $msg = '确实审核不通过吗？';
-            }
-            layer.confirm($msg, {icon: 3}, function(){
-                $.ajax({
-                    type: 'post', cache: false, dataType: 'json',
-                    url: '/finance/auditorp',
-                    data: {'id': $id, 'status': $status, 'reason': $v},
-                    success: function(data){
-                        if (data.status == 0) {
-                            layer.msg(data.info, {icon: 1, time: 1000}, function(){
-                                location.reload();
-                            });
-                        }else{
-                            layer.msg(data.info, {icon: 5, time: 1000})
-                        }
-                    }
-                })
-            })
-        }
+        })
     })
 </script>
 </html>
