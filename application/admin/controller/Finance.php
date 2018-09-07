@@ -3,6 +3,7 @@ namespace app\admin\controller;
 
 use app\common\model\AdminModel;
 use app\common\model\BalanceModel;
+use app\common\model\KefupaylogModel;
 use app\common\model\LogModel;
 use app\common\model\PaylogModel;
 use app\common\model\PutforwardModel;
@@ -746,6 +747,70 @@ class Finance extends \think\Controller
             return ['status' => 0, 'info' => '审核成功'];
         } else {
             return ['status' => 6, 'info' => '非法操作'];
+        }
+    }
+
+    /**
+     * 客服列表
+     * @Author 贺强
+     * @date   2018-09-07
+     * @param  AdminModel $a AdminModel 实例
+     */
+    public function kflist(AdminModel $a)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $where = ['is_delete' => 0, 'role_id' => 5, 'status' => 8];
+        if ($admin['role_id'] === 4) {
+            $where['z_id'] = $admin['id'];
+        } elseif ($admin['role_id'] !== 1) {
+            $this->error('非法操作');
+        }
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $a->getList($where, true, "$page,$pagesize", 'addtime desc');
+        $pages    = 0;
+        if ($list) {
+            $count = $a->getCount($where);
+            $pages = ceil($count / $pagesize);
+            foreach ($list as &$item) {
+                $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+            }
+        }
+        return $this->fetch('kflist', ['admin' => $admin, 'list' => $list, 'pages' => $pages]);
+    }
+
+    /**
+     * 给客服打款
+     * @Author 贺强
+     * @date   2018-09-07
+     * @param  KefupaylogModel $k KefupaylogModel 实例
+     */
+    public function give(KefupaylogModel $k)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        if ($this->request->isAjax()) {
+            $param = $this->request->post();
+            $reg   = '/^(\d+)(\.\d{1,2})?$/';
+            if (!preg_match($reg, $param['money'])) {
+                return ['status' => 1, 'info' => '打款金额有误'];
+            }
+            $param['z_id'] = $admin['id'];
+            $res           = $k->giveMoney($param);
+            if ($res !== true) {
+                if ($res == 1) {
+                    $msg = '余额不足';
+                } elseif ($res == 2 || $res == 3) {
+                    $msg = '余额更新出错';
+                }
+                return ['status' => $res, 'info' => $msg];
+            }
+            return ['status' => 0, 'info' => '打款成功'];
+        } else {
+            $kf_id = $this->request->get('kf_id');
+            return $this->fetch('give', ['kf_id' => $kf_id]);
         }
     }
 }
