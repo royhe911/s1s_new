@@ -8,6 +8,7 @@ use app\common\model\LogModel;
 use app\common\model\PaylogModel;
 use app\common\model\PutforwardModel;
 use app\common\model\RechargeModel;
+use app\common\model\TaskModel;
 
 /**
  * 财务管理
@@ -797,13 +798,16 @@ class Finance extends \think\Controller
             if (!preg_match($reg, $param['money'])) {
                 return ['status' => 1, 'info' => '打款金额有误'];
             }
-            $param['z_id'] = $admin['id'];
-            $res           = $k->giveMoney($param);
+            $param['z_id']    = $admin['id'];
+            $param['addtime'] = time();
+            $res              = $k->giveMoney($param);
             if ($res !== true) {
                 if ($res == 1) {
                     $msg = '余额不足';
-                } elseif ($res == 2 || $res == 3) {
+                } elseif ($res == 2 || $res == 3 || $res == 4) {
                     $msg = '余额更新出错';
+                } else {
+                    $msg = '系统错误';
                 }
                 return ['status' => $res, 'info' => $msg];
             }
@@ -812,5 +816,22 @@ class Finance extends \think\Controller
             $kf_id = $this->request->get('kf_id');
             return $this->fetch('give', ['kf_id' => $kf_id]);
         }
+    }
+
+    /**
+     * 试客打款
+     * @Author 贺强
+     * @date   2018-09-07
+     * @param  TaskModel  $t TaskModel 实例
+     */
+    public function shokeypay(TaskModel $t)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $where = [];
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $list     = $t->getJoinList([['s1s_shokey s', 's.id=a.sh_id'], ['s1s_shop h', 'h.id=a.shop_id']], $where, "$page,$pagesize", 'h.shop_name,s.`name`,a.price,a.actual_price,');
     }
 }

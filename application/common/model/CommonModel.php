@@ -216,7 +216,7 @@ class CommonModel extends Model
 
     /**
     * 联系查询总数
-    * @param array $join 联表查询，形如：[['think_card c','a.card_id=c.id'[, 'inner']], ……]
+    * @param array $join 联表查询，形如：[['think_card c','a.card_id=c.id'], ……]
     * @where array|string $where 查询条件，形如：['name'=>'think', 'id'=>['>', 3], ……]或者 SQL 原生字符串，默认为空
     * @param string $alias 用于设置当前数据表的别名，默认别名为 a
     * @return int 返回总数量
@@ -233,8 +233,8 @@ class CommonModel extends Model
 
     /**
     * 联表查询
-    * @param array $join 联表查询，形如：[['think_card c','a.card_id=c.id'[, 'inner']], ……]
-    * @where array|string $where 查询条件，形如：['name'=>'think', 'id'=>['>', 3], ……]或者 SQL 原生字符串，默认为空
+    * @param array $join 联表查询，形如：[['think_card c','a.card_id=c.id'], ……]
+    * @param array|string $where 查询条件，形如：['name'=>'think', 'id'=>['>', 3], ……]或者 SQL 原生字符串，默认为空
     * @param string $page 分页查询，形如：'1, 10'，其中字符串中第一个数字表示第几页，第二个数字表示每页多少条
     * @param array|string $field 要查询的字段，形如：['id', 'name', ……]或者'id, name, ……'，默认显式的获取数据表的所有字段列表
     * @param string $alias 用于设置当前数据表的别名，默认别名为 a

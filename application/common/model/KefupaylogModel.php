@@ -33,6 +33,10 @@ class KefupaylogModel extends CommonModel
             if (!$res) {
                 throw new \Exception(3);
             }
+            $res = $this->add($data);
+            if (!$res) {
+                throw new \Exception(4);
+            }
             Db::commit();
             return true;
         } catch (\Exception $e) {

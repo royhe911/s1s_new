@@ -40,6 +40,7 @@ return [
     '/finance/apply'         => 'admin/Finance/apply', // 佣金申请
     '/finance/kflist'        => 'admin/Finance/kflist', // 客服列表
     '/finance/give'          => 'admin/Finance/give', // 给客服打款
+    '/finance/shokeypay'     => 'admin/Finance/shokeypay', // 给试客打款
     '/shop/index'            => 'admin/Shop/index', // 店铺列表
     '/shop/add'              => 'admin/Shop/add', // 添加店铺
     '/shop/edit'             => 'admin/Shop/edit', // 修改店铺
