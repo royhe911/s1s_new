@@ -52,7 +52,7 @@ class Admin extends \think\Controller
             $where['id'] = ['in', $menu_ids];
         }
         $m    = new MenuModel();
-        $list = $m->getList($where, true, null, 'orders');
+        $list = $m->getList($where, true, null, 'orders,id');
         $arr  = [];
         foreach ($list as $item) {
             if ($item['pid'] === 0) {
@@ -240,7 +240,7 @@ class Admin extends \think\Controller
     public function edit(AdminModel $a)
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin   = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $role_id = $admin['role_id'];
         if ($this->request->isAjax()) {
             $param = $this->request->post();
@@ -285,10 +285,10 @@ class Admin extends \think\Controller
             if ($role_id != 1) {
                 $role_w = ['id' => ['<>', 1]];
             }
-            $roles    = $this->getRoles($role_w);
-            $salesman = $this->getUsers(['role_id' => 2]);
+            $roles     = $this->getRoles($role_w);
+            $salesman  = $this->getUsers(['role_id' => 2]);
             $executive = $this->getUsers(['role_id' => 4]);
-            $time     = time();
+            $time      = time();
             return $this->fetch('edit', ['admin' => $user, 'role_id' => $admin['role_id'], 'roles' => $roles, 'executive' => $executive, 'salesman' => $salesman, 'time' => $time, 'token' => md5(config('UPLOAD_SALT') . $time)]);
         }
     }
@@ -302,7 +302,7 @@ class Admin extends \think\Controller
     public function lists(AdminModel $a)
     {
         // 判断是否有权限访问或操作
-        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $admin   = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         $where   = ['is_delete' => 0];
         $keyword = '';
         $type    = 0;
