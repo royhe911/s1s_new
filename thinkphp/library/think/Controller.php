@@ -13,9 +13,9 @@ namespace think;
 
 \think\Loader::import('controller/Jump', TRAIT_PATH, EXT);
 
-use app\admin\model\AdminModel;
-use app\admin\model\MenuModel;
-use app\admin\model\RoleModel;
+use app\common\model\AdminModel;
+use app\common\model\MenuModel;
+use app\common\model\RoleModel;
 use think\Exception;
 use think\exception\ValidateException;
 
