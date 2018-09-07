@@ -61,6 +61,7 @@ class Admin extends \think\Controller
                 foreach ($arr as &$item2) {
                     if ($item['pid'] == $item2['id']) {
                         $item2['children'][] = $item;
+                        break;
                     }
                 }
             }

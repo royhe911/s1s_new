@@ -105,11 +105,11 @@ class Menu extends \think\Controller
     public function lists()
     {
         // 判断是否有权限访问或操作
-        $admin    = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
-        $r        = new RoleModel();
-        $m        = new MenuModel();
-        $roles    = $r->getList();
-        $where    = ['is_delete' => 0];
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        $r     = new RoleModel();
+        $m     = new MenuModel();
+        $roles = $r->getList();
+        $where = ['is_delete' => 0];
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
@@ -156,10 +156,23 @@ class Menu extends \think\Controller
             $m       = new MenuModel();
             $roles   = $r->getList(['id' => ['<>', 1]]);
             $role_id = $this->request->get('role_id');
-            $list    = $m->getList(['is_delete' => 0], true, null, 'orders');
-            $has     = $ra->getList(['role_id' => $role_id], 'menu_id');
-            $has     = array_column($has, 'menu_id');
-            return $this->fetch('power', ['list' => $list, 'roles' => $roles, 'has' => $has, 'role_id' => $role_id]);
+            $list    = $m->getList(['is_delete' => 0], true, null, 'pid,orders');
+            $arr     = [];
+            foreach ($list as $item) {
+                if ($item['pid'] === 0) {
+                    $arr[] = $item;
+                } else {
+                    foreach ($arr as &$item2) {
+                        if ($item['pid'] === $item2['id']) {
+                            $item2['children'][] = $item;
+                            break;
+                        }
+                    }
+                }
+            }
+            $has = $ra->getList(['role_id' => $role_id], 'menu_id');
+            $has = array_column($has, 'menu_id');
+            return $this->fetch('power', ['list' => $arr, 'roles' => $roles, 'has' => $has, 'role_id' => $role_id]);
         }
     }
 }
