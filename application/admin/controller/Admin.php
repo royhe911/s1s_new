@@ -52,7 +52,7 @@ class Admin extends \think\Controller
             $where['id'] = ['in', $menu_ids];
         }
         $m    = new MenuModel();
-        $list = $m->getList($where, true, null, 'orders,id');
+        $list = $m->getList($where, true, null, 'pid,orders');
         $arr  = [];
         foreach ($list as $item) {
             if ($item['pid'] === 0) {
