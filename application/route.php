@@ -47,4 +47,5 @@ return [
     '/shop/auditor'          => 'admin/Shop/auditor', // 店铺审核
     '/shokey/index'          => 'admin/Shokey/index', // 试客列表
     '/shokey/auditors'       => 'admin/Shokey/auditors', // 试客审核
+    '/task/index'            => 'admin/Task/index', // 任务列表
 ];
