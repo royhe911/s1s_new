@@ -15,7 +15,9 @@
     <style type="text/css">
         .form-control{width: 200px;}
         .keyword{width: 60%;margin: 0 auto;padding: 10px;}
-        .keyword table{margin-bottom: 15px;}
+        .keyword table{margin-bottom: 15px;border: solid 1px #ccc;}
+        .keyword table tr{height: 50px;}
+        .close{width: 30px;height: 30px;cursor: pointer;}
     </style>
 </head>
 <body class="gray-bg">
@@ -62,7 +64,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">商品链接</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="url">
+                                <input type="text" class="form-control" id="urll">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -88,24 +90,25 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="keyword" id="addkeyword">
-                            <table width="100%" style="border: solid 1px #ccc;">
+                            <table width="100%">
                                 <tr>
                                     <td>搜索关键词</td>
-                                    <td><input type="text" class="form-control" id="keyword1"></td>
+                                    <td><input type="text" class="form-control keywords"></td>
                                     <td>发布价</td>
-                                    <td><input type="text" id="price1" class="form-control"></td>
+                                    <td><input type="text" class="price form-control"></td>
                                     <td>单数</td>
-                                    <td><input type="text" id="num1" class="form-control" style="width: 80px;"></td>
+                                    <td><input type="text" class="num form-control" style="width: 80px;"></td>
+                                    <td>&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>附属服务</td>
-                                    <td colspan="5">
-                                        <input type="checkbox" value="chat1" id="chat1"><label for="chat1">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj1" value="hbsj1"><label for="hbsj1">货比三家</label> &nbsp; <input type="checkbox" id="jgwc1" value="jgwc1"><label for="jgwc1">加购物车</label> &nbsp; <input type="checkbox" id="scbb1" value="scbb1"><label for="scbb1">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp1" value="gzdp1"><label for="gzdp1">关注店铺</label> &nbsp; <input type="checkbox" id="llt1" value="llt1"><label for="llt1">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf1" value="llf1"><label for="llf1">浏览详情 5 分钟以上</label>
+                                    <td colspan="6">
+                                        <input type="checkbox" value="chat" id="chat1" class="chat"><label for="chat1">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj1" value="hbsj" class="hbsj"><label for="hbsj1">货比三家</label> &nbsp; <input type="checkbox" id="jgwc1" value="jgwc" class="jgwc"><label for="jgwc1">加购物车</label> &nbsp; <input type="checkbox" id="scbb1" value="scbb" class="scbb"><label for="scbb1">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp1" value="gzdp" class="gzdp"><label for="gzdp1">关注店铺</label> &nbsp; <input type="checkbox" id="llt1" value="llt" class="llt"><label for="llt1">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf1" value="llf" class="llf"><label for="llf1">浏览详情 5 分钟以上</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>其它要求</td>
-                                    <td colspan="5"><input type="text" placeholder="备注" id="remark1" class="form-control" style="width: 500px"></td>
+                                    <td colspan="6"><input type="text" placeholder="备注" class="remark form-control" style="width: 500px"></td>
                                 </tr>
                             </table>
                         </div>
@@ -138,39 +141,112 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var shop_name = $('#shop_name'), wangwang = $('#wangwang'), urll = $('#urll'), mobile = $('#mobile'), wx = $('#wx'), province = $('#province').val(), city = $('#city').val();
-                if (shop_name.val() == '') {
-                    layer.msg('店铺名称不能为空', {icon: 5, time: 1000}, function(){shop_name.focus()});
+                var shop_id = $('#shop_id').val(), category_id = $('#category_id').val(), title = $('#title'), url = $('#urll'), pic = $('#pic').val(), reward = $('#reward');
+                if (shop_id == '0') {
+                    layer.msg('请选择店铺', {icon: 5, time: 1000});
                     return false
                 }
-                if (wangwang.val() == '') {
-                    layer.msg('旺旺号不能为空', {icon: 5, time: 1000}, function(){wangwang.focus()});
+                if (category_id == '0') {
+                    layer.msg('请选择权重类目', {icon: 5, time: 1000});
+                    return false
+                }
+                if (title.val() == '') {
+                    layer.msg('商品标题不能为空', {icon: 5, time: 1000}, function(){title.focus()});
                     return false
                 }
                 if (urll.val() == '') {
-                    layer.msg('店铺网址不能为空', {icon: 5, time: 1000}, function(){urll.focus()});
+                    layer.msg('商品链接不能为空', {icon: 5, time: 1000}, function(){urll.focus()});
                     return false
                 }
-                if (mobile.val() == '') {
-                    layer.msg('手机不能为空', {icon: 5, time: 1000}, function(){mobile.focus()});
+                if (pic == '') {
+                    layer.msg('请上传商品主图', {icon: 5, time: 1000});
                     return false
                 }
-                if (wx.val() == '') {
-                    layer.msg('微信不能为空', {icon: 5, time: 1000}, function(){wx.focus()});
+                if (reward.val() == '') {
+                    layer.msg('赠品不能为空', {icon: 5, time: 1000});
                     return false
                 }
-                if (province == '') {
-                    layer.msg('请选择所属省份', {icon: 5, time: 1000});
-                    return false
-                }
-                if (city == '') {
-                    layer.msg('请选择所属市', {icon: 5, time: 1000});
-                    return false
-                }
+                var keyword_arr = [], price_arr = [], num_arr = [], chat_arr = [], hbsj_arr = [], jgwc_arr = [], scbb_arr = [], gzdp_arr = [], llt_arr = [], llf_arr = [], remark_arr = [];
+                $('.keywords').each(function(){
+                    if ($(this).val() != '') {
+                        keyword_arr.push($(this).val())
+                    } else {
+                        layer.msg('关键词不能为空', {icon: 5, time: 1000});
+                        return false
+                    }
+                });
+                $('.price').each(function(){
+                    if ($(this).val() != '') {
+                        price_arr.push($(this).val())
+                    } else {
+                        layer.msg('发布价不能为空', {icon: 5, time: 1000});
+                        return false
+                    }
+                });
+                $('.num').each(function(){
+                    if ($(this).val() != '' && $(this).val() > 0) {
+                        num_arr.push($(this).val())
+                    } else {
+                        layer.msg('单数必须大于0', {icon: 5, time: 1000});
+                        return false
+                    }
+                });
+                $('.chat').each(function(){
+                    if ($(this).is(':checked')) {
+                        chat_arr.push('chat')
+                    } else {
+                        chat_arr.push('nochat')
+                    }
+                });
+                $('.hbsj').each(function(){
+                    if ($(this).is(':checked')) {
+                        hbsj_arr.push('hbsj')
+                    } else {
+                        hbsj_arr.push('nohbsj')
+                    }
+                });
+                $('.jgwc').each(function(){
+                    if ($(this).is(':checked')) {
+                        jgwc_arr.push('jgwc')
+                    } else {
+                        jgwc_arr.push('nojgwc')
+                    }
+                });
+                $('.scbb').each(function(){
+                    if ($(this).is(':checked')) {
+                        scbb_arr.push('scbb')
+                    } else {
+                        scbb_arr.push('noscbb')
+                    }
+                });
+                $('.gzdp').each(function(){
+                    if ($(this).is(':checked')) {
+                        gzdp_arr.push('gzdp')
+                    } else {
+                        gzdp_arr.push('nogzdp')
+                    }
+                });
+                $('.llt').each(function(){
+                    if ($(this).is(':checked')) {
+                        llt_arr.push('llt')
+                    } else {
+                        llt_arr.push('nollt')
+                    }
+                });
+                $('.llf').each(function(){
+                    if ($(this).is(':checked')) {
+                        llf_arr.push('llf')
+                    } else {
+                        llf_arr.push('nollf')
+                    }
+                });
+                $('.remark').each(function(){
+                    remark_arr.push($(this).val())
+                });
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
-                    url: '/shop/add',
-                    data: {'shop_name': shop_name.val(), 'wangwang': wangwang.val(), 'url': urll.val(), 'mobile': mobile.val(), 'wx': wx.val(), 'province': province, 'city': city},
+                    url: '/task/add',
+                    data: {'shop_id': shop_id, 'category_id': category_id, 'title': title.val(), 'url': urll.val(), 'pic': pic, 'reward': reward.val(), 'province': province, 'keywords': keywords, 'price_arr': price_arr, 'num_arr': num_arr, 'chat_arr': chat_arr, 'hbsj_arr': hbsj_arr, 'jgwc_arr': jgwc_arr, 'scbb_arr': scbb_arr, 'gzdp_arr': gzdp_arr, 'llt_arr': llt_arr, 'llf_arr': llf_arr, 'remark_arr': remark_arr},
                     success: function(data){
                         if (data.status == 0) {
                             layer.confirm(data.info + '<br />是否继续添加？', {
@@ -190,11 +266,14 @@
             } else if ($action == 'cancel') {
                 location.href = '/task/index'
             } else if ($action == 'addkeyword') {
-                var str =  '<table width="100%" style="border: solid 1px #ccc;"><tr><td>搜索关键词</td><td><input type="text" class="form-control" id="keyword'+num+'"></td><td>发布价</td><td><input type="text" id="price'+num+'" class="form-control"></td><td>单数</td><td><input type="text" id="num'+num+'" class="form-control" style="width: 80px;"></td></tr><tr><td>附属服务</td><td colspan="5"><input type="checkbox" value="chat'+num+'" id="chat'+num+'"><label for="chat'+num+'">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj'+num+'" value="hbsj'+num+'"><label for="hbsj'+num+'">货比三家</label> &nbsp; <input type="checkbox" id="jgwc'+num+'" value="jgwc'+num+'"><label for="jgwc'+num+'">加购物车</label> &nbsp; <input type="checkbox" id="scbb'+num+'" value="scbb'+num+'"><label for="scbb'+num+'">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp'+num+'" value="gzdp'+num+'"><label for="gzdp'+num+'">关注店铺</label> &nbsp; <input type="checkbox" id="llt'+num+'" value="llt'+num+'"><label for="llt'+num+'">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf'+num+'" value="llf'+num+'"><label for="llf'+num+'">浏览详情 5 分钟以上</label></td></tr><tr><td>其它要求</td><td colspan="5"><input type="text" placeholder="备注" id="remark'+num+'" class="form-control" style="width: 500px"></td></tr></table>';
+                var str =  '<table width="100%" style="border: solid 1px #ccc;"><tr><td>搜索关键词</td><td><input type="text" class="form-control" class="keywords"></td><td>发布价</td><td><input type="text" class="price" class="form-control"></td><td>单数</td><td><input type="text" class="num form-control" style="width: 80px;"></td><td><img src="/static/h+/img/close.jpg" class="close"></td></tr><tr><td>附属服务</td><td colspan="6"><input type="checkbox" value="chat" id="chat'+num+'" class="chat"><label for="chat'+num+'">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj'+num+'" value="hbsj" class="hbsj"><label for="hbsj'+num+'">货比三家</label> &nbsp; <input type="checkbox" id="jgwc'+num+'" value="jgwc" class="jgwc"><label for="jgwc'+num+'">加购物车</label> &nbsp; <input type="checkbox" id="scbb'+num+'" value="scbb" class="scbb"><label for="scbb'+num+'">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp'+num+'" value="gzdp" class="gzdp"><label for="gzdp'+num+'">关注店铺</label> &nbsp; <input type="checkbox" id="llt'+num+'" value="llt" class="llt"><label for="llt'+num+'">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf'+num+'" value="llf" class="llf"><label for="llf'+num+'">浏览详情 5 分钟以上</label></td></tr><tr><td>其它要求</td><td colspan="6"><input type="text" placeholder="备注" class="remark form-control" style="width: 500px"></td></tr></table>';
                 $('#addkeyword').append(str);
                 num++;
             }
         });
+        $('#addkeyword').on('click', '.close', function(){
+            $(this).parents('table').remove()
+        })
         $('#file_upload').uploadifive({
             'auto'             : false,
             'buttonText'       : '选择图片',
