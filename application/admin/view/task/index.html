@@ -16,6 +16,7 @@
         .form-control{width: 220px;}
         .ttd{width: 250px;text-align: center;}
         .ttb{width: 80px;text-align: center;}
+        .pic{max-width: 64px;max-height: 64px;}
     </style>
 </head>
 <body class="gray-bg">
@@ -31,18 +32,34 @@
                         <thead>
                         <tr>
                             <th>序号</th>
+                            <th>商家</th>
                             <th>店铺名</th>
-                            <th>旺旺</th>
-                            <th>申请时间</th>
-                            <th>审核时间</th>
-                            <th>手机</th>
-                            <th>微信</th>
-                            <th>省/市</th>
-                            <th>状态</th>
+                            <th>主图</th>
+                            <th>宝贝详情</th>
+                            <th>任务本金/数量/预估服务费/其它</th>
+                            <th>完成金额/数量/已扣服务费/其它</th>
+                            <th>赠送礼品</th>
+                            <th>未完金额/数量</th>
+                            <th>任务状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
+                            {foreach $list as $k=>$item}
+                            <tr>
+                                <td>{$k+1}</td>
+                                <td>{$item.username}</td>
+                                <td>{$item.shop_name}</td>
+                                <td><img src="/uploads/{$item.pic}" class="pic" onerror="this.style.display='none'"></td>
+                                <td><a href="{$item.url}" title="{$item.title}">{$item.title}</a></td>
+                                <td>￥{$item.amount}/{$item.num}单/￥{$item.cost}/{$item.empty_cost}</td>
+                                <td>￥{$item.amount}/{$item.num}单/￥{$item.cost}/{$item.empty_cost}</td>
+                                <td>{$item.reward}</td>
+                                <td>￥{$item.amount}/{$item.num}单</td>
+                                <td>{$item.status_txt}</td>
+                                <td><a href="#" title="订单详情">订单详情</a></td>
+                            </tr>
+                            {/foreach}
                         </tbody>
                         <footer>
                             <tr>

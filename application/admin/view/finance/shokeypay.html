@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>试客打款</title>
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
+    <!-- Data Tables -->
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/plugins/dataTables/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
+    <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/paging/paging.css">
+    <style type="text/css">
+        .form-control{width: 220px;}
+        .ttd{width: 250px;text-align: center;}
+        .ttb{width: 80px;text-align: center;}
+        .jt{max-width: 80px;max-height: 80px;}
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>店铺名</th>
+                                <th>试客</th>
+                                <th>单价</th>
+                                <th>下单价</th>
+                                <th>完成时间</th>
+                                <th>旺旺号</th>
+                                <th>佣金</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $list as $k=>$item}
+                            <tr>
+                                <td>{$k+1}</td>
+                                <td>{$item.shop_name}</td>
+                                <td>{$item.name}</td>
+                                <td>{$item.price}</td>
+                                <td>{$item.actual_price}</td>
+                                <td>{$item.finish_time}</td>
+                                <td>{$item.wangwang}</td>
+                                <td>{$item.cost}</td>
+                                <td><a href="javascript:;" title="打款" data-action="pay">打款</a></td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                        <footer>
+                            <tr>
+                                <td colspan="100"><div class="dataTables_paginate paging_simple_numbers paging_page">{$pages}</div></td>
+                            </tr>
+                        </footer>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/paging/paging-min.js"></script>
+<script>
+    $(function () {
+        layer.config({extend: 'extend/layer.ext.js'});
+        $('[data-action]').click(function(){
+            var $action = $(this).data('action');
+            if ($action == 'putforward') {
+                layer.open({
+                    type: 2,
+                    title: '提现',
+                    shadeClose: false,
+                    content: '/finance/putforward',
+                    area: ['500px', '56%']
+                })
+            } else if ($action == 'auditor') {
+                $id = $(this).data('id');
+                layer.confirm('提现审核', {
+                    btn: ['通过', '不通过', '取消'],
+                    shade: false,
+                    closeBtn: 0
+                }, function(){
+                    $.ajax({
+                        type: 'post', cache: false, dataType: 'json',
+                        url: '/finance/auditorf',
+                        data: {'id': $id, 'status': 8},
+                        success: function(data){
+                            if (data.status == 0) {
+                                location.reload();
+                                layer.msg(data.info, {icon: 6, time: 1000})
+                            } else {
+                                layer.msg(data.info, {icon: 5, time: 1000})
+                            }
+                        }
+                    })
+                }, function(){
+                    layer.prompt({
+                        formType: 2,
+                        title: '请输入驳回原因'
+                    }, function(v, i, e){
+                        layer.close(i);
+                        $.ajax({
+                            type: 'post', cache: false, dataType: 'json',
+                            url: '/finance/auditorf',
+                            data: {'id': $id, 'reason': v, 'status': 1},
+                            success: function(data){
+                                if (data.status == 0) {
+                                    location.reload();
+                                    layer.msg(data.info, {icon: 6, time: 1000})
+                                } else {
+                                    layer.msg(data.info, {icon: 5, time: 1000})
+                                }
+                            }
+                        })
+                    })
+                })
+            }
+        })
+    })
+</script>
+</html>

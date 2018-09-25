@@ -248,10 +248,10 @@ class Admin extends \think\Controller
             $id    = $admin['id'];
             if ($role_id === 1) {
                 $id = $param['id'];
-            } elseif ($admin['uid'] !== $param['uid']) {
+            } elseif ($admin['username'] !== $param['username']) {
                 return ['status' => 1, 'info' => '非法操作，只能修改自己的账号'];
             }
-            unset($param['uid']);
+            unset($param['username']);
             if ($role_id != 1) {
                 unset($param['role_id']);
             }

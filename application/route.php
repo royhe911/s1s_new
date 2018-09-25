@@ -48,4 +48,5 @@ return [
     '/shokey/index'          => 'admin/Shokey/index', // 试客列表
     '/shokey/auditors'       => 'admin/Shokey/auditors', // 试客审核
     '/task/index'            => 'admin/Task/index', // 任务列表
+    '/task/add'              => 'admin/Task/add', // 发布任务
 ];

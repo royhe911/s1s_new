@@ -832,6 +832,20 @@ class Finance extends \think\Controller
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
-        $list     = $t->getJoinList([['s1s_shokey s', 's.id=a.sh_id'], ['s1s_shop h', 'h.id=a.shop_id']], $where, "$page,$pagesize", 'h.shop_name,s.`name`,a.price,a.actual_price,');
+        $list     = $t->getJoinList([['s1s_shokey s', 's.id=a.sh_id'], ['s1s_shop h', 'h.id=a.shop_id']], $where, "$page,$pagesize", 'h.shop_name,s.`name`,a.price,a.actual_price,a.finish_time,a.wangwang,a.cost');
+        $pages    = 0;
+        if ($list) {
+            $count = $t->getJoinCount([['s1s_shokey s', 's.id=a.sh_id'], ['s1s_shop h', 'h.id=a.shop_id']], $where);
+            $pages = ceil($count / $pagesize);
+            foreach ($list as &$item) {
+                if (!empty($item['finish_time'])) {
+                    $item['finish_time'] = date('Y-m-d H:i:s', $item['finish_time']);
+                }
+                if (!empty($item['addtime'])) {
+                    $item['addtime'] = date('Y-m-d H:i:s', $item['addtime']);
+                }
+            }
+        }
+        return $this->fetch('shokeypay', ['list' => $list, 'pages' => $pages]);
     }
 }

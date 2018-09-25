@@ -190,7 +190,7 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var uid = $('#uid'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), s_id = $('#s_id').val(), avatar = $('#avatar').val();
+                var username = $('#username'), pwd1 = $('#pwd1'), pwd2 = $('#pwd2'), role_id = $('#role_id').val(), realname = $('#realname'), nickname = $('#nickname'), s_id = $('#s_id').val(), avatar = $('#avatar').val();
                 if (pwd1.val() != '' && pwd1.val() != pwd2.val()) {
                     layer.msg('再次输入的密码不一致', {icon: 5, time: 1000}, function(){pwd1.focus()});
                     return false
@@ -218,7 +218,7 @@
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
                     url: '/admin/edit',
-                    data: {'id': {$admin['id']}, 'uid': uid.val(), 'pwd': pwd2.val(), 'role_id': role_id, 'realname': realname.val(), 'nickname': nickname.val(), 's_id': s_id, 'avatar': avatar, 'email': $('#email').val(), 'mobile': $('#mobile').val(), 'qq': $('#qq').val(), 'wx': $('#wx').val(), 'bank_card': $('#bank_card').val(), 'bank_name': $('#bank_name').val()},
+                    data: {'id': {$admin['id']}, 'username': username.val(), 'pwd': pwd2.val(), 'role_id': role_id, 'realname': realname.val(), 'nickname': nickname.val(), 's_id': s_id, 'avatar': avatar, 'email': $('#email').val(), 'mobile': $('#mobile').val(), 'qq': $('#qq').val(), 'wx': $('#wx').val(), 'bank_card': $('#bank_card').val(), 'bank_name': $('#bank_name').val()},
                     success: function(data){
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 6, time: 1000});

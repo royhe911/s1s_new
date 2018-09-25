@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布任务</title>
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/font-awesome.min93e3.css?v=4.4.0">
+    <!-- Data Tables -->
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/plugins/iCheck/custom.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/h+/css/style.min.css?v=4.1.0">
+    <link rel="stylesheet" type="text/css" href="/static/layer/skin/layer.css">
+    <link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css">
+    <style type="text/css">
+        .form-control{width: 200px;}
+        .keyword{width: 60%;margin: 0 auto;padding: 10px;}
+        .keyword table{margin-bottom: 15px;}
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>发布任务</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" onsubmit="return false">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">选择店铺</label>
+                            <div class="col-sm-10">
+                                <select id="shop_id" class="form-control">
+                                    <option value="0">…选择店铺…</option>
+                                    {foreach $shops as $shop}
+                                    <option value="{$shop.id}">{$shop.shop_name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">权重类目</label>
+                            <div class="col-sm-10">
+                                <select id="category_id" class="form-control">
+                                    <option value="0">…请选择权重类目…</option>
+                                    {foreach $categorys as $category}
+                                    <option value="{$category['id']}">{$category['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">商品标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="title">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">商品链接</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="url">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">商品主图</label>
+                            <div class="col-sm-10">
+                                <table width="100%">
+                                    <tr>
+                                        <td valign="top" width="120px"><input id="file_upload" name="file_upload" type="file"></td>
+                                        <td valign="top"><input class="btn btn-primary" type="button" data-action="upload" value="上传"></td>
+                                    </tr>
+                                    <tr><td colspan="2"><div id="progress"></div><input type="hidden" id="pic"></td></tr>
+                                    <tr><td colspan="2"><img id="preview" src=""></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">赠品</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="reward" class="form-control">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="keyword" id="addkeyword">
+                            <table width="100%" style="border: solid 1px #ccc;">
+                                <tr>
+                                    <td>搜索关键词</td>
+                                    <td><input type="text" class="form-control" id="keyword1"></td>
+                                    <td>发布价</td>
+                                    <td><input type="text" id="price1" class="form-control"></td>
+                                    <td>单数</td>
+                                    <td><input type="text" id="num1" class="form-control" style="width: 80px;"></td>
+                                </tr>
+                                <tr>
+                                    <td>附属服务</td>
+                                    <td colspan="5">
+                                        <input type="checkbox" value="chat1" id="chat1"><label for="chat1">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj1" value="hbsj1"><label for="hbsj1">货比三家</label> &nbsp; <input type="checkbox" id="jgwc1" value="jgwc1"><label for="jgwc1">加购物车</label> &nbsp; <input type="checkbox" id="scbb1" value="scbb1"><label for="scbb1">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp1" value="gzdp1"><label for="gzdp1">关注店铺</label> &nbsp; <input type="checkbox" id="llt1" value="llt1"><label for="llt1">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf1" value="llf1"><label for="llf1">浏览详情 5 分钟以上</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>其它要求</td>
+                                    <td colspan="5"><input type="text" placeholder="备注" id="remark1" class="form-control" style="width: 500px"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <input class="btn btn-primary" type="button" data-action="addkeyword" value="添加关键词">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <input class="btn btn-primary" type="button" data-action="save" value="保存内容">
+                                <input class="btn btn-white" type="button" data-action="cancel" value="取消">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/static/h+/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/h+/js/plugins/iCheck/icheck.min.js"></script>
+<script type="text/javascript" src="/static/layer/layer.js"></script>
+<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.js"></script>
+<script type="text/javascript">
+    $(function(){
+        var num = 2;
+        $('input[data-action]').click(function(){
+            $action = $(this).data('action');
+            if ($action == 'save') {
+                var shop_name = $('#shop_name'), wangwang = $('#wangwang'), urll = $('#urll'), mobile = $('#mobile'), wx = $('#wx'), province = $('#province').val(), city = $('#city').val();
+                if (shop_name.val() == '') {
+                    layer.msg('店铺名称不能为空', {icon: 5, time: 1000}, function(){shop_name.focus()});
+                    return false
+                }
+                if (wangwang.val() == '') {
+                    layer.msg('旺旺号不能为空', {icon: 5, time: 1000}, function(){wangwang.focus()});
+                    return false
+                }
+                if (urll.val() == '') {
+                    layer.msg('店铺网址不能为空', {icon: 5, time: 1000}, function(){urll.focus()});
+                    return false
+                }
+                if (mobile.val() == '') {
+                    layer.msg('手机不能为空', {icon: 5, time: 1000}, function(){mobile.focus()});
+                    return false
+                }
+                if (wx.val() == '') {
+                    layer.msg('微信不能为空', {icon: 5, time: 1000}, function(){wx.focus()});
+                    return false
+                }
+                if (province == '') {
+                    layer.msg('请选择所属省份', {icon: 5, time: 1000});
+                    return false
+                }
+                if (city == '') {
+                    layer.msg('请选择所属市', {icon: 5, time: 1000});
+                    return false
+                }
+                $.ajax({
+                    type: 'post', cache: false, dataType: 'json',
+                    url: '/shop/add',
+                    data: {'shop_name': shop_name.val(), 'wangwang': wangwang.val(), 'url': urll.val(), 'mobile': mobile.val(), 'wx': wx.val(), 'province': province, 'city': city},
+                    success: function(data){
+                        if (data.status == 0) {
+                            layer.confirm(data.info + '<br />是否继续添加？', {
+                                btn: ['是', '否'],
+                                shade: false,
+                                closeBtn: 0
+                            }, function(){
+                                location.reload()
+                            }, function(){
+                                location.href = '/shop/index'
+                            })
+                        }else{
+                            layer.msg(data.info, {icon: 5, time: 1000});
+                        }
+                    }
+                })
+            } else if ($action == 'cancel') {
+                location.href = '/task/index'
+            } else if ($action == 'addkeyword') {
+                var str =  '<table width="100%" style="border: solid 1px #ccc;"><tr><td>搜索关键词</td><td><input type="text" class="form-control" id="keyword'+num+'"></td><td>发布价</td><td><input type="text" id="price'+num+'" class="form-control"></td><td>单数</td><td><input type="text" id="num'+num+'" class="form-control" style="width: 80px;"></td></tr><tr><td>附属服务</td><td colspan="5"><input type="checkbox" value="chat'+num+'" id="chat'+num+'"><label for="chat'+num+'">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj'+num+'" value="hbsj'+num+'"><label for="hbsj'+num+'">货比三家</label> &nbsp; <input type="checkbox" id="jgwc'+num+'" value="jgwc'+num+'"><label for="jgwc'+num+'">加购物车</label> &nbsp; <input type="checkbox" id="scbb'+num+'" value="scbb'+num+'"><label for="scbb'+num+'">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp'+num+'" value="gzdp'+num+'"><label for="gzdp'+num+'">关注店铺</label> &nbsp; <input type="checkbox" id="llt'+num+'" value="llt'+num+'"><label for="llt'+num+'">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf'+num+'" value="llf'+num+'"><label for="llf'+num+'">浏览详情 5 分钟以上</label></td></tr><tr><td>其它要求</td><td colspan="5"><input type="text" placeholder="备注" id="remark'+num+'" class="form-control" style="width: 500px"></td></tr></table>';
+                $('#addkeyword').append(str);
+                num++;
+            }
+        });
+        $('#file_upload').uploadifive({
+            'auto'             : false,
+            'buttonText'       : '选择图片',
+            'queueID'          : 'progress',
+            'fileTypeDesc'     : 'Image Files',
+            'fileTypeExts'     : '*.jpg;*.gif;*.png',
+            'multi'            : false,
+            'removeCompleted'  : true,
+            'formData'         : {
+                'timestamp' : '{$time}',
+                'token'     : '{$token}'
+            },
+            'uploadScript'     : '/upload',
+            'onUploadComplete' : function(file, data) {
+                // data = eval('(' + data + ')');
+                data = JSON.parse(data);
+                $('#pic').val(data.path);
+            }
+        });
+    });
+</script>
+</html>
