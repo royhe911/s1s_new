@@ -49,4 +49,6 @@ return [
     '/shokey/auditors'       => 'admin/Shokey/auditors', // 试客审核
     '/task/index'            => 'admin/Task/index', // 任务列表
     '/task/add'              => 'admin/Task/add', // 发布任务
+    '/task/charge'           => 'admin/Task/charge', // 服务费设置
+    '/task/over'             => 'admin/Task/over_task', // 结束任务
 ];

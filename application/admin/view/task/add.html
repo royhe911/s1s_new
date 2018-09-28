@@ -103,7 +103,7 @@
                                 <tr>
                                     <td>附属服务</td>
                                     <td colspan="6">
-                                        <input type="checkbox" value="chat" id="chat1" class="chat"><label for="chat1">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj1" value="hbsj" class="hbsj"><label for="hbsj1">货比三家</label> &nbsp; <input type="checkbox" id="jgwc1" value="jgwc" class="jgwc"><label for="jgwc1">加购物车</label> &nbsp; <input type="checkbox" id="scbb1" value="scbb" class="scbb"><label for="scbb1">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp1" value="gzdp" class="gzdp"><label for="gzdp1">关注店铺</label> &nbsp; <input type="checkbox" id="llt1" value="llt" class="llt"><label for="llt1">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf1" value="llf" class="llf"><label for="llf1">浏览详情 5 分钟以上</label>
+                                        <input type="checkbox" value="需要聊天" id="chat1" class="chat"><label for="chat1">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj1" value="货比三家" class="hbsj"><label for="hbsj1">货比三家</label> &nbsp; <input type="checkbox" id="jgwc1" value="加购物车" class="jgwc"><label for="jgwc1">加购物车</label> &nbsp; <input type="checkbox" id="scbb1" value="收藏宝贝" class="scbb"><label for="scbb1">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp1" value="关注店铺" class="gzdp"><label for="gzdp1">关注店铺</label> &nbsp; <input type="checkbox" id="llt1" value="浏览店内两个以上宝贝" class="llt"><label for="llt1">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf1" value="浏览详情5分钟以上" class="llf"><label for="llf1">浏览详情 5 分钟以上</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -141,7 +141,7 @@
         $('input[data-action]').click(function(){
             $action = $(this).data('action');
             if ($action == 'save') {
-                var shop_id = $('#shop_id').val(), category_id = $('#category_id').val(), title = $('#title'), url = $('#urll'), pic = $('#pic').val(), reward = $('#reward');
+                var shop_id = $('#shop_id').val(), category_id = $('#category_id').val(), title = $('#title'), urll = $('#urll'), pic = $('#pic').val(), reward = $('#reward');
                 if (shop_id == '0') {
                     layer.msg('请选择店铺', {icon: 5, time: 1000});
                     return false
@@ -193,51 +193,51 @@
                 });
                 $('.chat').each(function(){
                     if ($(this).is(':checked')) {
-                        chat_arr.push('chat')
+                        chat_arr.push($(this).val())
                     } else {
-                        chat_arr.push('nochat')
+                        chat_arr.push('')
                     }
                 });
                 $('.hbsj').each(function(){
                     if ($(this).is(':checked')) {
-                        hbsj_arr.push('hbsj')
+                        hbsj_arr.push($(this).val())
                     } else {
-                        hbsj_arr.push('nohbsj')
+                        hbsj_arr.push('')
                     }
                 });
                 $('.jgwc').each(function(){
                     if ($(this).is(':checked')) {
-                        jgwc_arr.push('jgwc')
+                        jgwc_arr.push($(this).val())
                     } else {
-                        jgwc_arr.push('nojgwc')
+                        jgwc_arr.push('')
                     }
                 });
                 $('.scbb').each(function(){
                     if ($(this).is(':checked')) {
-                        scbb_arr.push('scbb')
+                        scbb_arr.push($(this).val())
                     } else {
-                        scbb_arr.push('noscbb')
+                        scbb_arr.push('')
                     }
                 });
                 $('.gzdp').each(function(){
                     if ($(this).is(':checked')) {
-                        gzdp_arr.push('gzdp')
+                        gzdp_arr.push($(this).val())
                     } else {
-                        gzdp_arr.push('nogzdp')
+                        gzdp_arr.push('')
                     }
                 });
                 $('.llt').each(function(){
                     if ($(this).is(':checked')) {
-                        llt_arr.push('llt')
+                        llt_arr.push($(this).val())
                     } else {
-                        llt_arr.push('nollt')
+                        llt_arr.push('')
                     }
                 });
                 $('.llf').each(function(){
                     if ($(this).is(':checked')) {
-                        llf_arr.push('llf')
+                        llf_arr.push($(this).val())
                     } else {
-                        llf_arr.push('nollf')
+                        llf_arr.push('')
                     }
                 });
                 $('.remark').each(function(){
@@ -246,7 +246,7 @@
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
                     url: '/task/add',
-                    data: {'shop_id': shop_id, 'category_id': category_id, 'title': title.val(), 'url': urll.val(), 'pic': pic, 'reward': reward.val(), 'province': province, 'keywords': keywords, 'price_arr': price_arr, 'num_arr': num_arr, 'chat_arr': chat_arr, 'hbsj_arr': hbsj_arr, 'jgwc_arr': jgwc_arr, 'scbb_arr': scbb_arr, 'gzdp_arr': gzdp_arr, 'llt_arr': llt_arr, 'llf_arr': llf_arr, 'remark_arr': remark_arr},
+                    data: {'shop_id': shop_id, 'category_id': category_id, 'title': title.val(), 'url': urll.val(), 'pic': pic, 'reward': reward.val(), 'keyword_arr': keyword_arr, 'price_arr': price_arr, 'num_arr': num_arr, 'chat_arr': chat_arr, 'hbsj_arr': hbsj_arr, 'jgwc_arr': jgwc_arr, 'scbb_arr': scbb_arr, 'gzdp_arr': gzdp_arr, 'llt_arr': llt_arr, 'llf_arr': llf_arr, 'remark_arr': remark_arr},
                     success: function(data){
                         if (data.status == 0) {
                             layer.confirm(data.info + '<br />是否继续添加？', {
@@ -266,9 +266,11 @@
             } else if ($action == 'cancel') {
                 location.href = '/task/index'
             } else if ($action == 'addkeyword') {
-                var str =  '<table width="100%" style="border: solid 1px #ccc;"><tr><td>搜索关键词</td><td><input type="text" class="form-control" class="keywords"></td><td>发布价</td><td><input type="text" class="price" class="form-control"></td><td>单数</td><td><input type="text" class="num form-control" style="width: 80px;"></td><td><img src="/static/h+/img/close.jpg" class="close"></td></tr><tr><td>附属服务</td><td colspan="6"><input type="checkbox" value="chat" id="chat'+num+'" class="chat"><label for="chat'+num+'">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj'+num+'" value="hbsj" class="hbsj"><label for="hbsj'+num+'">货比三家</label> &nbsp; <input type="checkbox" id="jgwc'+num+'" value="jgwc" class="jgwc"><label for="jgwc'+num+'">加购物车</label> &nbsp; <input type="checkbox" id="scbb'+num+'" value="scbb" class="scbb"><label for="scbb'+num+'">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp'+num+'" value="gzdp" class="gzdp"><label for="gzdp'+num+'">关注店铺</label> &nbsp; <input type="checkbox" id="llt'+num+'" value="llt" class="llt"><label for="llt'+num+'">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf'+num+'" value="llf" class="llf"><label for="llf'+num+'">浏览详情 5 分钟以上</label></td></tr><tr><td>其它要求</td><td colspan="6"><input type="text" placeholder="备注" class="remark form-control" style="width: 500px"></td></tr></table>';
+                var str =  '<table width="100%" style="border: solid 1px #ccc;"><tr><td>搜索关键词</td><td><input type="text" class="form-control keywords"></td><td>发布价</td><td><input type="text" class="price" class="form-control"></td><td>单数</td><td><input type="text" class="num form-control" style="width: 80px;"></td><td><img src="/static/h+/img/close.jpg" class="close"></td></tr><tr><td>附属服务</td><td colspan="6"><input type="checkbox" value="需要聊天" id="chat'+num+'" class="chat"><label for="chat'+num+'">需要聊天</label> &nbsp; <input type="checkbox" id="hbsj'+num+'" value="货比三家" class="hbsj"><label for="hbsj'+num+'">货比三家</label> &nbsp; <input type="checkbox" id="jgwc'+num+'" value="加购物车" class="jgwc"><label for="jgwc'+num+'">加购物车</label> &nbsp; <input type="checkbox" id="scbb'+num+'" value="收藏宝贝" class="scbb"><label for="scbb'+num+'">收藏宝贝</label> &nbsp; <input type="checkbox" id="gzdp'+num+'" value="关注店铺" class="gzdp"><label for="gzdp'+num+'">关注店铺</label> &nbsp; <input type="checkbox" id="llt'+num+'" value="浏览店内两个以上宝贝" class="llt"><label for="llt'+num+'">浏览店内两个以上宝贝</label> &nbsp; <input type="checkbox" id="llf'+num+'" value="浏览详情5分钟以上" class="llf"><label for="llf'+num+'">浏览详情5分钟以上</label></td></tr><tr><td>其它要求</td><td colspan="6"><input type="text" placeholder="备注" class="remark form-control" style="width: 500px"></td></tr></table>';
                 $('#addkeyword').append(str);
                 num++;
+            } else if ($action == 'upload') {
+                $('#file_upload').uploadifive('upload')
             }
         });
         $('#addkeyword').on('click', '.close', function(){

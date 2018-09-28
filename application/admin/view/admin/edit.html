@@ -121,6 +121,13 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">旺旺号</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="wangwang" value="{$admin.wangwang}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">手机</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="mobile" value="{$admin.mobile}">
@@ -218,7 +225,7 @@
                 $.ajax({
                     type: 'post', cache: false, dataType: 'json',
                     url: '/admin/edit',
-                    data: {'id': {$admin['id']}, 'username': username.val(), 'pwd': pwd2.val(), 'role_id': role_id, 'realname': realname.val(), 'nickname': nickname.val(), 's_id': s_id, 'avatar': avatar, 'email': $('#email').val(), 'mobile': $('#mobile').val(), 'qq': $('#qq').val(), 'wx': $('#wx').val(), 'bank_card': $('#bank_card').val(), 'bank_name': $('#bank_name').val()},
+                    data: {'id': {$admin['id']}, 'username': username.val(), 'pwd': pwd2.val(), 'role_id': role_id, 'realname': realname.val(), 'nickname': nickname.val(), 's_id': s_id, 'avatar': avatar, 'email': $('#email').val(), 'wangwang': $('#wangwang').val(), 'mobile': $('#mobile').val(), 'qq': $('#qq').val(), 'wx': $('#wx').val(), 'bank_card': $('#bank_card').val(), 'bank_name': $('#bank_name').val()},
                     success: function(data){
                         if (data.status == 0) {
                             layer.msg(data.info, {icon: 6, time: 1000});
