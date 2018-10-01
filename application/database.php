@@ -13,17 +13,17 @@ return [
     // 数据库类型
     'type'           => 'mysql',
     // 服务器地址
-    // 'hostname'       => '127.0.0.1',
-    'hostname'       => 'localhost',
+    'hostname'       => '127.0.0.1',
+    // 'hostname'       => 'localhost',
     // 数据库名
-    // 'database'       => 's1s_new',
-    'database'       => 'aqqbjso',
+    'database'       => 's1s_new',
+    // 'database'       => 'aqqbjso',
     // 用户名
-    // 'username'       => 'root',
-    'username'       => 'aqqbjso',
+    'username'       => 'root',
+    // 'username'       => 'aqqbjso',
     // 密码
-    // 'password'       => '',
-    'password'       => 'm823636z',
+    'password'       => '',
+    // 'password'       => 'm823636z',
     // 端口
     'hostport'       => '3306',
     // 连接dsn

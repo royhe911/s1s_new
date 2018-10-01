@@ -74,9 +74,12 @@ class Task extends \think\Controller
     public function over_task(TaskModel $t)
     {
         if ($this->request->isAjax()) {
-            $id = $this->request->post('id');
-            if ($id) {
-                $res = $t->modifyField('status', 44, ['id' => $id]);
+            $id           = $this->request->post('id');
+            $actual_price = $this->request->post('actual_price');
+            if ($id && preg_match('/^\d+[\.\d{1,2}]?$/', $actual_price)) {
+                $cost = $t->getCost($actual_price);
+                $res  = $t->modify(['status' => 44, 'finish_time' => time(), 'actual_price' => $actual_price, 'actual_cost' => $cost], ['id' => $id]);
+                // $res = $t->modifyField('status', 44, ['id' => $id]);
                 if ($res) {
                     return ['status' => 0, 'info' => '操作成功'];
                 } else {
@@ -172,5 +175,38 @@ class Task extends \think\Controller
             }
         }
         return $this->fetch('index', ['list' => $list, 'pages' => $pages]);
+    }
+
+    /**
+     * 完成任务统计
+     * @Author 贺强
+     * @Date   2018-10-01
+     * @param  TaskModel  $t TaskModel 实例
+     */
+    public function statistics(TaskModel $t)
+    {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
+        // 分页参数
+        $page     = intval($this->request->get('page', 1));
+        $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
+        $pages    = 0;
+        $field    = ["from_unixtime(finish_time, '%Y年%d月%m日') finish_time", "from_unixtime(finish_time, '%Y%d%m') finish_time2", "sum(actual_price) actual_price", "sum(actual_cost) actual_cost", "count(*) count"];
+        $list     = $t->getList(['status' => 44], $field, "$page,$pagesize", 'finish_time desc', "FROM_UNIXTIME(finish_time,'%y%d%m')");
+        // print_r($list);exit;
+        if ($list) {
+            $count  = $t->getCount(['status' => 44], "FROM_UNIXTIME(finish_time,'%y%d%m')");
+            $pages  = ceil($count / $pagesize);
+            $field2 = ["from_unixtime(finish_time, '%Y%d%m') finish_time2", "count(*) count", "case when actual_price<101 then 100 when actual_price<201 then 200 when actual_price<301 then 300 when actual_price<401 then 400 when actual_price<501 then 500 when actual_price<601 then 600 end actual"];
+            $list2  = $t->getList(['status' => 44], $field2, null, null, 'actual');
+            foreach ($list as &$item) {
+                foreach ($list2 as $item2) {
+                    if ($item['finish_time2'] === $item2['finish_time2']) {
+                        $item["count{$item2['actual']}"] = $item2['count'];
+                    }
+                }
+            }
+        }
+        return $this->fetch('statistics', ['list' => $list, 'pages' => $pages]);
     }
 }

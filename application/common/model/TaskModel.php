@@ -123,7 +123,7 @@ class TaskModel extends CommonModel
      * @param  decimal    $price 任务价格
      * @return decimal           返回服务费
      */
-    private function getCost($price)
+    public function getCost($price)
     {
         $charges = session('charges');
         if (empty($charges)) {
