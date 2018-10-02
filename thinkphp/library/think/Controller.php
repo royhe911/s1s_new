@@ -109,15 +109,15 @@ class Controller
             return $admin;
         }
         if (empty($identity)) {
-            $this->error('您无权访问或操作');
+            $this->error('您无权访问或操作1');
         }
         $m    = new MenuModel();
         $menu = $m->getModel(['identity' => $identity], 'id');
         if (empty($menu)) {
-            $this->error('您无权访问或操作');
+            $this->error('您无权访问或操作2');
         }
         if (!in_array($menu['id'], $admin['roles'])) {
-            $this->error('您无权访问或操作');
+            $this->error('您无权访问或操作3');
         }
         return $admin;
     }

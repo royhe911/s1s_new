@@ -143,10 +143,10 @@ class Admin extends \think\Controller
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
             $param = $this->request->post();
-            if (empty($param['uid']) || empty($param['pwd']) || empty($param['role_id'])) {
+            if (empty($param['username']) || empty($param['pwd']) || empty($param['role_id'])) {
                 return ['status' => 1, 'info' => '非法参数'];
             }
-            $has = $a->getCount(['is_delete' => 0, 'uid' => $param['uid']]);
+            $has = $a->getCount(['is_delete' => 0, 'username' => $param['username']]);
             if (!empty($has)) {
                 return ['status' => 2, 'info' => '该账号已存在'];
             }
@@ -165,7 +165,7 @@ class Admin extends \think\Controller
             $param['status']  = 8;
             $res              = $a->add($param);
             $l                = new LogModel();
-            $l->addLog(['type' => LogModel::TYPE_ADD_USER, 'content' => '添加用户，添加的用户：' . $param['uid']]);
+            $l->addLog(['type' => LogModel::TYPE_ADD_USER, 'content' => '添加用户，添加的用户：' . $param['username']]);
             if (!$res) {
                 return ['status' => 4, 'info' => '添加失败'];
             }
