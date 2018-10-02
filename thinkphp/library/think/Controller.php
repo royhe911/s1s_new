@@ -111,6 +111,9 @@ class Controller
         if (empty($identity)) {
             $this->error('您无权访问或操作1');
         }
+        if (strrpos($identity, '\\') !== false) {
+            $identity = substr($identity, strrpos($identity, '\\') + 1);
+        }
         $m    = new MenuModel();
         $menu = $m->getModel(['identity' => $identity], 'id');
         if (empty($menu)) {

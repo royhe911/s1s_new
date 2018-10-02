@@ -161,7 +161,7 @@ class CommonModel extends Model
             ->order($order)
             ->where($where)
             ->whereOr($whereOr)
-        // ->fetchSql(true)
+            // ->fetchSql(true)
             ->find();
         // $model = db($this->table)->where($where)->find();
         return $model;
