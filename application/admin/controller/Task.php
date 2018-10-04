@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use app\common\model\AdminModel;
 use app\common\model\CategoryModel;
 use app\common\model\ChargeModel;
+use app\common\model\LogModel;
 use app\common\model\ProductModel;
 use app\common\model\ShopModel;
 use app\common\model\TaskModel;
@@ -69,18 +70,69 @@ class Task extends \think\Controller
     /**
      * 结束任务
      * @Author 贺强
+     * @Date   2018-10-04
+     */
+    public function overtask(TaskModel $t)
+    {
+        $admin = $this->is_login();
+        if ($this->request->isAjax()) {
+            $param = $this->request->post();
+            if (empty($param['id']) || empty($param['wangwang']) || empty($param['tb_order']) || empty($param['actual_price']) || empty($param['actual_cost'])) {
+                return ['status' => 1, 'info' => '非法参数'];
+            }
+            $has = $t->getModel(['tb_order' => $param['tb_order']]);
+            if ($has) {
+                return ['status' => 2, 'info' => '订单号已存在'];
+            }
+            $param['status'] = 44;
+            $res             = $t->modify($param, ['id' => $param['id']]);
+            if (!$res) {
+                return ['status' => 4, 'info' => '操作失败'];
+            }
+            return ['status' => 0, 'info' => '操作成功'];
+        } else {
+            $id = $this->request->get('id');
+            return $this->fetch('over', ['taskid' => $id]);
+        }
+    }
+
+    /**
+     * 结束任务
+     * @Author 贺强
      * @Date   2018-09-27
      */
-    public function over_task(TaskModel $t)
+    public function opertask(TaskModel $t)
     {
+        // 判断是否有权限访问或操作
+        $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
         if ($this->request->isAjax()) {
-            $id           = $this->request->post('id');
-            $actual_price = $this->request->post('actual_price');
-            if ($id && preg_match('/^\d+[\.\d{1,2}]?$/', $actual_price)) {
-                $cost = $t->getCost($actual_price);
-                $res  = $t->modify(['status' => 44, 'finish_time' => time(), 'actual_price' => $actual_price, 'actual_cost' => $cost], ['id' => $id]);
-                // $res = $t->modifyField('status', 44, ['id' => $id]);
+            $id     = $this->request->post('id');
+            $status = intval($this->request->post('status'));
+            if ($id && $status) {
+                $data = ['status' => $status, 'finish_time' => time()];
+                if ($status === 4) {
+                    $content            = "审核任务不通过";
+                    $abn_reason         = $this->request->post('abn_reason');
+                    $data['abn_reason'] = $abn_reason;
+                } elseif ($status === 15) {
+                    $content      = "领取任务";
+                    $data['k_id'] = $admin['id'];
+                } elseif ($status === 8) {
+                    $content      = "审核任务通过或退领任务";
+                    $data['k_id'] = 0;
+                } elseif ($status === 44) {
+                    $content      = "完成任务";
+                    $actual_price = $this->request->post('actual_price');
+                    if (preg_match('/^\d+[\.\d{1,2}]?$/', $actual_price)) {
+                        $cost                 = $t->getCost($actual_price);
+                        $data['actual_price'] = $actual_price;
+                        $data['actual_cost']  = $cost;
+                    }
+                }
+                $res = $t->modify($data, ['id' => $id]);
                 if ($res) {
+                    $l = new LogModel();
+                    $l->addLog(['type' => LogModel::TYPE_OVERTASK, 'content' => $content]);
                     return ['status' => 0, 'info' => '操作成功'];
                 } else {
                     return ['status' => 3, 'info' => '操作失败'];
@@ -103,12 +155,25 @@ class Task extends \think\Controller
     {
         // 判断是否有权限访问或操作
         $admin = $this->is_valid(strtolower(basename(get_class())) . '_' . strtolower(__FUNCTION__));
-        $where = [];
+        $where = '1';
         // 分页参数
         $page     = intval($this->request->get('page', 1));
         $pagesize = intval($this->request->get('pagesize', config('PAGESIZE')));
-        $list     = $t->getList($where, true, "$page,$pagesize", 'status');
-        $pages    = 0;
+        if ($admin['username'] !== 'admin') {
+            if ($admin['role_id'] === 2 || $admin['role_id'] === 4) {
+                $a        = new AdminModel();
+                $s_id_arr = $a->getList(['s_id|z_id' => $admin['id']], 'id');
+                $s_ids    = '0';
+                foreach ($s_id_arr as $sia) {
+                    $s_ids .= ",{$sia['id']}";
+                }
+                $where .= " and (k_id in ($s_ids) or `status`=8)";
+            } elseif ($admin['role_id'] === 5) {
+                $where .= " and (k_id={$admin['id']} or `status`=8)";
+            }
+        }
+        $list  = $t->getList($where, true, "$page,$pagesize", 'status');
+        $pages = 0;
         if ($list) {
             $pids  = array_column($list, 'pid');
             $pids  = implode(',', $pids);
@@ -154,24 +219,17 @@ class Task extends \think\Controller
                 } else {
                     $item['username'] = '';
                 }
-                if ($item['status'] === 44) {
-                    $item['status_txt'] = '任务结束';
-                } else {
-                    $item['status_txt'] = '进行中';
+                if ($item['status'] === 0) {
+                    $item['status_txt'] = '待审核';
+                } elseif ($item['status'] === 4) {
+                    $item['status_txt'] = '审核不通过';
+                } elseif ($item['status'] === 8) {
+                    $item['status_txt'] = '已审核';
+                } elseif ($item['status'] === 15) {
+                    $item['status_txt'] = '已领取';
+                } elseif ($item['status'] === 44) {
+                    $item['status_txt'] = '已结束';
                 }
-                // if ($item['status'] === 0) {
-                //     $item['status_txt'] = '待付款';
-                // } elseif ($item['status'] === 5) {
-                //     $item['status_txt'] = '待审核';
-                // } elseif ($item['status'] === 9) {
-                //     $item['status_txt'] = '审核不通过';
-                // } elseif ($item['status'] === 15) {
-                //     $item['status_txt'] = '已审核';
-                // } elseif ($item['status'] === 18) {
-                //     $item['status_txt'] = '下架';
-                // } elseif ($item['status'] === 20) {
-                //     $item['status_txt'] = '进行中';
-                // }
             }
         }
         return $this->fetch('index', ['list' => $list, 'pages' => $pages]);

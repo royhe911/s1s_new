@@ -50,6 +50,7 @@ return [
     '/task/index'            => 'admin/Task/index', // 任务列表
     '/task/add'              => 'admin/Task/add', // 发布任务
     '/task/charge'           => 'admin/Task/charge', // 服务费设置
-    '/task/over'             => 'admin/Task/over_task', // 结束任务
+    '/task/oper'             => 'admin/Task/opertask', // 操作任务
     '/task/statistics'       => 'admin/Task/statistics', // 任务统计
+    '/task/over'             => 'admin/Task/overtask', // 结束任务
 ];

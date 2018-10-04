@@ -43,6 +43,7 @@ class LogModel extends CommonModel
     const TYPE_AUDITORS                 = 31; // 试客审核
     const TYPE_AUDITOR                  = 32; // 店铺审核
     const TYPE_AUDITORP                 = 33; // 佣金审核
+    const TYPE_OVERTASK                 = 34; // 操作任务
 
     /**
      * 写操作日志

@@ -37,10 +37,10 @@
                             <th>主图</th>
                             <th>宝贝详情</th>
                             <th>任务本金/预估服务费</th>
-                            <!-- <th>任务本金/数量/预估服务费/其它</th> -->
                             <th>完成金额/已扣服务费</th>
                             <th>赠送礼品</th>
-                            <!-- <th>未完金额/数量</th> -->
+                            <th>订单号</th>
+                            <th>旺旺号</th>
                             <th>任务状态</th>
                             <th>操作</th>
                         </tr>
@@ -53,14 +53,13 @@
                                 <td>{$item.shop_name}</td>
                                 <td><img src="/uploads/{$item.pic}" class="pic" onerror="this.style.display='none'"></td>
                                 <td><a href="{$item.url}" target="_blank" title="{$item.title}">{$item.title}</a></td>
-                                <!-- <td>￥{$item.amount}/{$item.num}单/￥{$item.cost}/0</td> -->
                                 <td>￥{$item.price}/￥{$item.cost}</td>
                                 <td>￥{$item.actual_price}/￥{$item.actual_cost}</td>
                                 <td>{$item.reward}</td>
-                                <!-- <td>￥{$item.amount}/{$item.num}单</td> -->
+                                <td>{$item.tb_order}</td>
+                                <td>{$item.wangwang}</td>
                                 <td>{$item.status_txt}</td>
-                                <!-- <td><a href="#" title="订单详情">订单详情</a></td> -->
-                                <td>{if($item.status!=44)}<a data-action="over" data-id="{$item['id']}" href="#">完成任务</a>{else/}已结束{/if}</td>
+                                <td>{if($item.status==0)}<a data-action="auditor" data-id="{$item['id']}" href="#">审核</a>{elseif($item.status==8)}<a data-action="receive" data-id="{$item['id']}" href="#">领取</a>{elseif($item.status==15)}<a data-action="over" data-id="{$item['id']}" href="#">完成任务</a> | <a data-action="retreat" data-id="{$item['id']}" href="#">退领</a>{else/}已结束{/if}</td>
                             </tr>
                             {/foreach}
                         </tbody>
@@ -85,22 +84,83 @@
         $('a[data-action]').click(function(){
             var $action = $(this).data('action'), $id = $(this).data('id');
             if($action == 'over'){
-                layer.prompt({
-                    formType: 2,
-                    title: '请输入实际金额'
-                }, function(v, i, e){
-                    layer.close(i);
+                layer.open({
+                    type: 2,
+                    title: '输入任务信息',
+                    shadeClose: false,
+                    content: '/task/over?id=' + $id,
+                    area: ['500px', '70%']
+                })
+            }else if ($action == 'auditor') {
+                layer.confirm('任务审核', {
+                    btn: ['通过', '不通过', '取消'],
+                    shade: false,
+                    closeBtn: 0
+                }, function(){
+                    layer.confirm('确实要审核通过吗？', {icon: 3}, function(){
+                        $.ajax({
+                            type: 'post', cache: false, dataType: 'json',
+                            url: '/task/oper',
+                            data: {'id': $id, 'status': 8},
+                            success: function(data){
+                                if (data.status == 0) {
+                                    layer.msg(data.info, {icon: 6, time: 1000}, function(){
+                                        location.reload()
+                                    });
+                                }else{
+                                    layer.msg(data.info, {icon: 2, time: 1000});
+                                }
+                            }
+                        })
+                    })
+                }, function(){
+                    layer.prompt({
+                        formType: 2,
+                        title: '输入审核不通过原因'
+                    }, function(v, i, e){
+                        $.ajax({
+                            type: 'post', cache: false, dataType: 'json',
+                            url: '/task/oper',
+                            data: {'id': $id, 'status': 4, 'abn_reason': v},
+                            success: function(data){
+                                if (data.status == 0) {
+                                    layer.msg(data.info, {icon: 6, time: 1000});
+                                    location.reload()
+                                }else{
+                                    layer.msg(data.info, {icon: 2, time: 1000})
+                                }
+                            }
+                        })
+                    })
+                })
+            } else if ($action == 'retreat') {
+                layer.confirm('确实要退领吗？', {icon: 3}, function(){
                     $.ajax({
                         type: 'post', cache: false, dataType: 'json',
-                        url: '/task/over',
-                        data: {'id': $id, 'actual_price': v},
+                        url: '/task/oper',
+                        data: {'id': $id, 'status': 8},
                         success: function(data){
                             if (data.status == 0) {
-                                layer.msg(data.info, {icon: 1, time: 1000}, function(){
-                                    location.reload();
-                                })
+                                layer.msg(data.info, {icon: 6, time: 1000});
+                                location.reload()
                             }else{
-                                layer.msg(data.info, {icon: 5, time: 1000})
+                                layer.msg(data.info, {icon: 2, time: 1000})
+                            }
+                        }
+                    })
+                })
+            } else if ($action == 'receive') {
+                layer.confirm('确实要领取吗？', {icon: 3}, function(){
+                    $.ajax({
+                        type: 'post', cache: false, dataType: 'json',
+                        url: '/task/oper',
+                        data: {'id': $id, 'status': 15},
+                        success: function(data){
+                            if (data.status == 0) {
+                                layer.msg(data.info, {icon: 6, time: 1000});
+                                location.reload()
+                            }else{
+                                layer.msg(data.info, {icon: 2, time: 1000})
                             }
                         }
                     })
